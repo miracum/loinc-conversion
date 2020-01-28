@@ -12,7 +12,7 @@ try {
 		loinc_units[entry["LOINC_NUM"]] = entry["EXAMPLE_UCUM_UNITS"];
 } catch(e) {
 	console.log("Could not load 'Loinc.csv'. Did you download the official 'LOINC Table File (CSV)' from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?");
-	process.exit();
+	process.exit(-1);
 }
 
 // Read custom conversion database:
@@ -26,7 +26,7 @@ try {
 		loinc_units[entry["TARGET_LOINC"]] = entry["TO_UNIT"];
 } catch(e) {
 	console.log("Could not load 'conversion.csv'.");
-	process.exit();
+	process.exit(-1);
 }
 
 // Create UCUM conversion singleton:
@@ -100,6 +100,14 @@ app.post('/conversions', (request, response) => {
 
 	response.send(result);
 });
+
+app.get("/health", async (_req, res) => {
+	return res.json({
+		status: "healthy",
+		description: "application is healthy",
+	});
+});
+  
 app.listen(8080, () => {
 	console.log(`Server listening on port 8080...`);
 });
