@@ -1,12 +1,11 @@
-FROM node:13-slim
-
+FROM node:13.7-alpine
 WORKDIR /opt/loinc-conversion
 
-COPY server.js .
-COPY package.json .
-COPY conversion.csv .
-COPY Loinc.csv .
+COPY package*.json ./
+ENV NODE_ENV=production
+RUN npm ci --no-optional
+COPY server.js conversion.csv Loinc.csv ./
 
-RUN npm install
-
-ENTRYPOINT ["node", "server.js"]
+EXPOSE 8080
+HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/health || exit 1
+ENTRYPOINT [ "npm", "run", "start" ]
