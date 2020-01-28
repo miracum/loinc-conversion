@@ -1,0 +1,85 @@
+image: docker:stable
+
+variables:
+  DOCKER_REGISTRY: docker.miracum.org
+  IMAGE_PATH: docker.miracum.org/miracum-etl/loinc-conversion
+
+.docker_registry:
+  before_script:
+    - echo $REGISTRY_PASSWORD | docker login -u $REGISTRY_USERNAME $DOCKER_REGISTRY --password-stdin
+  after_script:
+    - docker logout $DOCKER_REGISTRY
+
+stages:
+  - lint
+  - version
+  - build
+  - release
+
+lint dockerfile:
+  stage: lint
+  image: hadolint/hadolint:latest-debian
+  script:
+    - hadolint Dockerfile
+  only:
+    changes:
+      - "**/*Dockerfile"
+  except:
+    - tags
+
+lint yaml:
+  stage: lint
+  image:
+    name: cytopia/yamllint:latest
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - yamllint .
+  only:
+    changes:
+      - "deploy/*"
+  except:
+    - tags
+
+get next version:
+  image: docker.miracum.org/miracum-devops/semantic-release
+  stage: version
+  script:
+    - npx semantic-release --dry-run
+    - test -e .VERSION || (echo $(git describe --abbrev=0 --tags | tr -d v) > .VERSION && touch .NORELEASE)
+  artifacts:
+    paths:
+      - .VERSION
+      - .NORELEASE
+    expire_in: 1 hour
+  except:
+    - tags
+
+build and unittest:
+  stage: build
+  extends: .docker_registry
+  script:
+    - export VERSION=$(cat .VERSION)
+    - docker build -t $IMAGE_PATH:$CI_COMMIT_SHORT_SHA --build-arg VERSION=$VERSION .
+    - docker push $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
+  except:
+    - tags
+
+push to harbor:
+  image: docker:git
+  stage: release
+  extends: .docker_registry
+  script:
+    - export IMAGE_TAG=v$(cat .VERSION)
+    - docker pull $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
+    - docker tag $IMAGE_PATH:$CI_COMMIT_SHORT_SHA $IMAGE_PATH:$IMAGE_TAG
+    - docker push $IMAGE_PATH:$IMAGE_TAG
+  only:
+    - master
+
+create project release:
+  image: docker.miracum.org/miracum-devops/semantic-release
+  stage: release
+  script:
+    - npx semantic-release
+  only:
+    - master
