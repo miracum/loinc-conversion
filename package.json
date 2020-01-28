@@ -1,0 +1,24 @@
+{
+  "name": "lab-unit-harmonizer",
+  "version": "0.0.1",
+  "description": "Harmonizes LOINC codes and units.",
+  "main": "server.js",
+  "dependencies": {
+    "@lhncbc/ucum-lhc": "^3.0.0",
+    "csv-parse": "^4.8.5",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "LOINC",
+    "UCUM",
+    "MIRACUM",
+    "German Medical Informatics Initiative"
+  ],
+  "author": "Jakob Zierk",
+  "license": "ISC"
+}
