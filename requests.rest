@@ -1,4 +1,4 @@
-POST http://localhost:8080/ HTTP/1.1
+POST http://localhost:8080/conversions HTTP/1.1
 content-type: application/json
 
 {
@@ -28,21 +28,20 @@ content-type: application/json
 
 
 
-POST http://localhost:8080/ HTTP/1.1
+POST http://localhost:8080/conversions HTTP/1.1
 content-type: application/json
 
-{
+[{
     "loinc": "59260-0",
     "unit": "mol/l"
-}
-####
+},
 {
     "loinc": "718-7",
     "unit": "mg/dl"
-}
+}]
 
 {
     "loinc": "5445",
     "unit": "mg/dl",
-    "factor": gfgfsagfdws
+    "factor": "gfgfsagfdws"
 }
