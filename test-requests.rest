@@ -1,11 +1,13 @@
 POST http://localhost:8080/conversions HTTP/1.1
 content-type: application/json
 
-{
-    "loinc": "718-7",
-    "unit": "ug/dL",
-    "value": 1
-}
+[
+    {
+        "loinc": "718-7",
+        "unit": "g/dL",
+        "value": 12
+    }
+]
 ####
 
 
@@ -16,7 +18,7 @@ content-type: application/json
     {
         "loinc": "718-7",
         "unit": "g/dL",
-        "value": 1
+        "value": 12
     },
     {
         "loinc": "59260-0",
