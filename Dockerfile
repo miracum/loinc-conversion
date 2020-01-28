@@ -6,6 +6,7 @@ COPY ./conversion.csv /opt/loinc-conversion/conversion.csv
 COPY ./Loinc.csv /opt/loinc-conversion/Loinc.csv
 COPY ./start.sh /opt/loinc-conversion/start.sh
 
-RUN cd /opt/loinc-conversion && npm install
+WORKDIR /opt/loinc-conversion
+RUN npm install
 
 ENTRYPOINT ["/opt/loinc-conversion/start.sh"]
