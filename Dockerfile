@@ -9,4 +9,4 @@ COPY ./start.sh /opt/loinc-conversion/start.sh
 WORKDIR /opt/loinc-conversion
 RUN npm install
 
-ENTRYPOINT ["/opt/loinc-conversion/start.sh"]
+ENTRYPOINT ["node", "server.js"]
