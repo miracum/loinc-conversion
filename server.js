@@ -35,7 +35,7 @@ var utils = ucum.UcumLhcUtils.getInstance();
 // Start 'express' http server w/ json support:
 console.log("Starting server...")
 const app = express();
-app.use(express.json());
+app.use(express.json(options={"limit": "10mb"}));
 
 /*
  REST server
@@ -88,14 +88,24 @@ app.post('/conversions', (request, response) => {
 			loinc = conversion_units[loinc]["TO_LOINC"];
 		}
 
+		// Convert using UCUM lib:
+		try {
+			target_unit = loinc_units[loinc];
+			var rs_entry = {
+				"value": utils.convertUnitTo(unit, value, target_unit)["toVal"],
+				"unit": target_unit,
+				"loinc": loinc
+			}
+			if("id" in entry)
+				rs_entry["id"] = entry["id"];
+		} catch(e) {
+			rs_entry = {
+				"error": "Exception during conversion."
+			}
+		}
+
 		// Result JSON:
-		target_unit = loinc_units[loinc];
-		result.push({
-			// Convert using UCUM lib:
-			"value": utils.convertUnitTo(unit, value, target_unit)["toVal"],
-			"unit": target_unit,
-			"loinc": loinc
-		});
+		result.push(rs_entry);
 	}
 
 	response.send(result);

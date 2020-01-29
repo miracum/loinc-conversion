@@ -3,6 +3,7 @@ content-type: application/json
 
 [
     {
+        "id": 12,
         "loinc": "718-7",
         "unit": "g/dL",
         "value": 12
@@ -33,14 +34,184 @@ content-type: application/json
 POST http://localhost:8080/conversions HTTP/1.1
 content-type: application/json
 
-[{
-    "loinc": "59260-0",
-    "unit": "mol/l"
-},
-{
-    "loinc": "718-7",
-    "unit": "mg/dl"
-}]
+[
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    },
+    {
+        "loinc": "59260-0",
+        "unit": "mol/l"
+    },
+    {
+        "loinc": "718-7",
+        "unit": "mg/dl"
+    }
+]
 
 {
     "loinc": "5445",

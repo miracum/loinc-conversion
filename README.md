@@ -16,10 +16,11 @@ Content-type: `application/json`
 Body:
 ```
 [
-    {
+		{
 		"loinc": "str, e.g. 718-7",
 		"unit": "UCUM unit, e.g. g/dL",
-		"value": float, optional(=1.0)
+		"value": float, optional(=1.0),
+		"id": anything_you_want, optional
 	}+
 ]
 ```
@@ -32,32 +33,34 @@ POST http://localhost:8080/conversions HTTP/1.1
 content-type: application/json
 
 [
-    {
-        "loinc": "718-7",
-        "unit": "g/dL",
-        "value": 12
-    },
-    {
-        "loinc": "59260-0",
-        "unit": "mmol/l",
-        "value": 10
-    }
+		{
+				"loinc": "718-7",
+				"unit": "g/dL",
+				"value": 12,
+				"id": "my_internal_id_22"
+		},
+		{
+				"loinc": "59260-0",
+				"unit": "mmol/l",
+				"value": 10
+		}
 ]
 ```
 
 Result:
 ```
 [
-  {
-    "value": 12,
-    "unit": "g/dL",
-    "loinc": "718-7"
-  },
-  {
-    "value": 16.1,
-    "unit": "g/dL",
-    "loinc": "718-7"
-  }
+	{
+		"value": 12,
+		"unit": "g/dL",
+		"loinc": "718-7",
+		"id": "my_internal_id_22"
+	},
+	{
+		"value": 16.1,
+		"unit": "g/dL",
+		"loinc": "718-7"
+	}
 ]
 ```
 
