@@ -15,10 +15,22 @@ try {
 	process.exit(-1);
 }
 
-// Read custom conversion database:
-console.log("Parsing 'conversion.csv'...")
+// Read custom synonyms database:
+console.log("Parsing 'synonyms.tsv'...")
 try {
-	conversion_csv = parse( fs.readFileSync("conversion.csv", "utf-8"), { columns: true } );
+	synonyms_csv = parse( fs.readFileSync("synonyms.tsv", "utf-8"), { columns: true, delimiter: "\t" } );
+	synonyms = {};
+	for(entry of synonyms_csv)
+		synonyms[entry["NOT_UCUM"]] = entry["UCUM"];
+} catch(e) {
+	console.log("Could not load 'synonyms.csv'.");
+	process.exit(-1);
+}
+
+// Read custom conversion database:
+console.log("Parsing 'conversion.tsv'...")
+try {
+	conversion_csv = parse( fs.readFileSync("conversion.tsv", "utf-8"), { columns: true, delimiter: "\t" } );
 	conversion_units = {};
 	for(entry of conversion_csv)
 		conversion_units[entry["FROM_LOINC"]] = entry;
@@ -54,54 +66,50 @@ app.post('/conversions', (request, response) => {
 	result = [];
 
 	for(entry of request.body) {
-
-		// Value is optional, default to 1.0:
-		if(!("value" in entry))
-			entry["value"] = 1.0;
-
-		loinc = entry["loinc"];
-		unit = entry["unit"];
-		value = Number(entry["value"]);
-		if(value == null) {
-			result.push({"error": "Could not parse value: '" + entry["value"] + "'."});
-			continue;
-		}
-
-		// Check if input LOINC exists:
-		if(!(loinc in  loinc_units)) {
-			result.push({"error": "Invalid loinc: '" + loinc + "'."});
-			continue;
-		}
-
-		// Check if input UCUM unit exists:
-		if(!utils.validateUnitString(unit)) {
-			result.push({"error": "Invalid UCUM unit: '" + unit + "'."});
-			continue;
-		}
-
-		// Convert according to custom conversion table:
-		if(loinc in conversion_units) {
-			value = utils.convertUnitTo(unit, value, conversion_units[loinc]["FROM_UNIT"])["toVal"];
-			// --> unit = conversion[loinc]["FROM_UNIT"];
-			value *= conversion_units[loinc]["FACTOR"];
-			unit = conversion_units[loinc]["TO_UNIT"];
-			loinc = conversion_units[loinc]["TO_LOINC"];
-		}
-
-		// Convert using UCUM lib:
+		rs_entry = {};
+		if("id" in entry)
+			rs_entry["id"] = entry["id"];
+		
 		try {
+			// Value is optional, default to 1.0:
+			if(!("value" in entry))
+				entry["value"] = 1.0;
+
+			loinc = entry["loinc"];
+			unit = entry["unit"];
+			value = Number(entry["value"]);
+			if(value == null)
+				throw "Could not parse value: '" + entry["value"] + "'.";
+
+			// Check if input LOINC exists:
+			if(!(loinc in  loinc_units)) 
+				throw "Invalid loinc: '" + loinc + "'.";
+
+			// Convert input unit if UCUM synonym exists:
+			if(unit in synonyms)
+				unit = synonyms[unit];
+
+			// Check if input UCUM unit exists:
+			if(utils.validateUnitString(unit).status != "valid")
+				throw "Invalid UCUM unit: '" + unit + "'.";
+
+			// Convert according to custom conversion table:
+			if(loinc in conversion_units) {
+				value = utils.convertUnitTo(unit, value, conversion_units[loinc]["FROM_UNIT"])["toVal"];
+				// --> unit = conversion[loinc]["FROM_UNIT"];
+				value *= conversion_units[loinc]["FACTOR"];
+				unit = conversion_units[loinc]["TO_UNIT"];
+				loinc = conversion_units[loinc]["TO_LOINC"];
+			}
+
+			// Convert using UCUM lib:
 			target_unit = loinc_units[loinc];
-			var rs_entry = {
-				"value": utils.convertUnitTo(unit, value, target_unit)["toVal"],
-				"unit": target_unit,
-				"loinc": loinc
-			}
-			if("id" in entry)
-				rs_entry["id"] = entry["id"];
+			rs_entry["value"] = utils.convertUnitTo(unit, value, target_unit)["toVal"];
+			rs_entry["unit"] = target_unit;
+			rs_entry["loinc"] = loinc;
 		} catch(e) {
-			rs_entry = {
-				"error": "Exception during conversion."
-			}
+			rs_entry["error"] = "Exception during conversion: " + e;
+			console.log("Exception during conversion: " + e);
 		}
 
 		// Result JSON:

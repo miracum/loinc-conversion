@@ -11,6 +11,19 @@ content-type: application/json
 ]
 ####
 
+POST http://localhost:8080/conversions HTTP/1.1
+content-type: application/json
+
+[
+    {
+        "id": 12,
+        "loinc": "26464-8",
+        "unit": "x 10^6/ul",
+        "value": 12
+    }
+]
+####
+
 
 POST http://localhost:8080/conversions HTTP/1.1
 content-type: application/json
