@@ -4,7 +4,7 @@ WORKDIR /opt/loinc-conversion
 COPY package*.json ./
 ENV NODE_ENV=production
 RUN npm ci --no-optional
-COPY server.js conversion.csv Loinc.csv ./
+COPY server.js conversion.tsv synonyms.tsv Loinc.csv ./
 
 EXPOSE 8080
 HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/health || exit 1
