@@ -1,10 +1,8 @@
 version: "3.7"
 
 services:
-  loinc_conversion:
-    container_name: loinc-conversion
+  loinc-conversion:
+    image: docker.miracum.org/miracum-etl/loinc-conversion:v1.2.0
+    restart: unless-stopped
     ports:
       - "8080:8080"
-    image: loinc-converter:0.0.1
-    restart: unless-stopped
-    command: bash -c "tail -f /dev/null"

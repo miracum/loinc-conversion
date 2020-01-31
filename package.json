@@ -2,16 +2,31 @@
   "name": "lab-unit-harmonizer",
   "version": "0.0.1",
   "description": "Harmonizes LOINC codes and units.",
-  "main": "server.js",
+  "main": "src/server.js",
   "dependencies": {
-    "@lhncbc/ucum-lhc": "^3.0.0",
-    "csv-parse": "^4.8.5",
-    "express": "^4.17.1"
+    "@lhncbc/ucum-lhc": "3.0.1",
+    "csv-parse": "4.8.5",
+    "express": "4.17.1",
+    "winston": "3.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "6.8.0",
+    "eslint-config-airbnb": "18.0.1",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-config-prettier": "6.10.0",
+    "eslint-plugin-import": "2.20.0",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-prettier": "3.1.2",
+    "eslint-plugin-react": "7.14.3",
+    "eslint-plugin-react-hooks": "1.7.0",
+    "prettier": "1.19.1",
+    "@commitlint/cli": "8.3.5",
+    "@commitlint/config-conventional": "8.3.4",
+    "husky": "4.2.1"
+  },
   "scripts": {
     "test": "test.js",
-    "start": "node server.js"
+    "start": "node src/server.js"
   },
   "keywords": [
     "LOINC",
@@ -20,5 +35,15 @@
     "German Medical Informatics Initiative"
   ],
   "author": "Jakob Zierk",
-  "license": "ISC"
+  "license": "ISC",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
 }

@@ -2,7 +2,8 @@ image: docker:stable
 
 variables:
   DOCKER_REGISTRY: docker.miracum.org
-  IMAGE_PATH: docker.miracum.org/miracum-etl/loinc-conversion
+  PROJECT_PATH: /miracum-etl/loinc-conversion
+  IMAGE_PATH: $DOCKER_REGISTRY$PROJECT_PATH
 
 .docker_registry:
   before_script:
@@ -10,59 +11,65 @@ variables:
   after_script:
     - docker logout $DOCKER_REGISTRY
 
+.job_defaults:
+  only:
+    - master
+    - merge_requests
+
+include:
+  - project: "devops/ci-templates"
+    file: "/preflight/.tidy-files.yml"
+  - project: "devops/ci-templates"
+    file: "/linting/.yamllint.yml"
+  - project: "devops/ci-templates"
+    file: "/linting/.hadolint.yml"
+  - project: "devops/ci-templates"
+    file: "/linting/.markdownlint.yml"
+  - project: "devops/ci-templates"
+    file: "/versioning/.semantic-release-get-version.yml"
+  - project: "devops/ci-templates"
+    file: "/image-scanning/.trivy-scan.yml"
+
 stages:
+  - preflight
   - lint
   - version
   - build
+  - test
   - release
 
-lint dockerfile:
-  stage: lint
-  image: hadolint/hadolint:latest-debian
-  script:
-    - hadolint Dockerfile
-  only:
-    changes:
-      - "**/*Dockerfile"
-  except:
-    - tags
+check file tidiness:
+  extends: .job_defaults
 
-lint yaml:
-  stage: lint
-  image:
-    name: cytopia/yamllint:latest
-    entrypoint: ["/bin/sh", "-c"]
-  script:
-    - yamllint .
-  only:
-    changes:
-      - "deploy/*"
-  except:
-    - tags
+hadolint:
+  extends: .job_defaults
+
+yamllint:
+  extends: .job_defaults
+
+markdownlint:
+  extends: .job_defaults
 
 get next version:
-  image: docker.miracum.org/miracum-devops/semantic-release
-  stage: version
-  script:
-    - npx semantic-release --dry-run
-    - test -e .VERSION || (echo $(git describe --abbrev=0 --tags | tr -d v) > .VERSION && touch .NORELEASE)
-  artifacts:
-    paths:
-      - .VERSION
-      - .NORELEASE
-    expire_in: 1 hour
-  except:
-    - tags
+  extends: .job_defaults
 
-build and unittest:
+build:
   stage: build
-  extends: .docker_registry
+  extends:
+    - .job_defaults
+    - .docker_registry
   script:
     - export VERSION=$(cat .VERSION)
     - docker build -t $IMAGE_PATH:$CI_COMMIT_SHORT_SHA --build-arg VERSION=$VERSION .
     - docker push $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
   except:
     - tags
+
+trivy:
+  extends: .job_defaults
+  allow_failure: true
+  variables:
+    IMAGE_FQN: $DOCKER_REGISTRY$PROJECT_PATH:$CI_COMMIT_SHORT_SHA
 
 push to harbor:
   image: docker:git
@@ -76,7 +83,7 @@ push to harbor:
   only:
     - master
 
-create project release:
+create gitlab  release:
   image: docker.miracum.org/miracum-devops/semantic-release
   stage: release
   script:
