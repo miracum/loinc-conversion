@@ -3,7 +3,7 @@ WORKDIR /opt/loinc-conversion
 
 COPY package*.json ./
 ENV NODE_ENV=production
-RUN npm ci --no-optional
+RUN npm ci --no-optional --only=prod
 COPY src src
 COPY data data
 
