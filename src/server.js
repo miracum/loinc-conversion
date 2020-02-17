@@ -138,11 +138,15 @@ app.post("/conversions", async (request, response) => {
       rsEntry.loinc = loinc;
     } catch (e) {
       rsEntry.error = `Exception during conversion: ${e}`;
-      log.info("Exception during conversion", e);
+      log.warn("Exception during conversion", e);
     }
 
     // Result JSON:
     result.push(rsEntry);
+  }
+
+  if (result.some(entry => entry.error)) {
+    return response.status(422).send(result);
   }
 
   return response.send(result);
