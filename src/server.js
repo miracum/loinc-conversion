@@ -82,7 +82,7 @@ app.post("/conversions", async (request, response) => {
   const result = [];
 
   if (!request.body) {
-    return request.status(400).send("Empty request body.");
+    return response.status(400).send("Empty request body.");
   }
 
   for (const entry of request.body) {
