@@ -4,8 +4,8 @@
   "description": "Harmonizes LOINC codes and units.",
   "main": "src/server.js",
   "dependencies": {
-    "@lhncbc/ucum-lhc": "3.0.1",
-    "csv-parse": "4.8.5",
+    "@lhncbc/ucum-lhc": "4.0.1",
+    "csv-parse": "4.8.6",
     "express": "4.17.1",
     "winston": "3.2.1"
   },
@@ -20,7 +20,7 @@
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-prettier": "3.1.2",
     "eslint-plugin-react": "7.18.3",
-    "eslint-plugin-react-hooks": "2.3.0",
+    "eslint-plugin-react-hooks": "2.4.0",
     "grunt": "1.0.4",
     "husky": "4.2.3",
     "prettier": "1.19.1"
