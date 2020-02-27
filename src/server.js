@@ -115,7 +115,7 @@ app.post("/conversions", async (request, response) => {
 
       // Check if input UCUM unit exists:
       if (utils.validateUnitString(unit).status !== "valid") {
-        throw new Error("Invalid UCUM unit", { unit });
+        throw new Error(`Invalid UCUM unit: ${unit}`, { unit });
       }
 
       // Convert according to custom conversion table:
