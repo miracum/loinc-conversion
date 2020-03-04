@@ -129,3 +129,43 @@ Zellen/µL	{cells}/ul
 µmol/L	umol/l
 µmol/molKrea	umol/mol{creat}
 µU/ml	uU/ml
+mmol/mol Krea	mmol/mol{creat}
+8*10hoch8 Ery	pmol/8*10{RBCs}
+mg/g Crea	mg/g{creat}
+mmol/l	mmol/L
+IU/l EC	[IU]/L{RBC}
+pro 100 Leukozyten	/100{WBC}
+pro 100 Leukos	/100{WBC}
+BE	[beth'U]
+g/dl	g/dL
+10^3/ÂµL	10*3/uL
+micromol/L	umol/L
+mg/l	mg/L
+U/g Crea	U/g{creat}
+mmol/mmol Crea	mmol/mmol{creat}
+mmol/mmol Krea	mmol/mmol{creat}
+mmol/l z.Quadrat	mmol2/L
+ml/min/1.73 m2	mL/min/{1.73_m2}
+ml/min/1.73qm	mL/min/{1.73_m2}
+ml/min	mL/min
+mU/mg Protein	mU/mg{prot}
+Vol%	%{vol}
+mU/ml	mU/mL
+Mio/Âµl	10*6/uL
+g/g Creatinin	g/g{creat}
+Bethesda-Units	[beth'U]
+mg/dl Erythrozyten	mg/dL{RBCs}
+g GAG / mol Krea	g{GAG}/mol{creat}
+mmol/mol Hb	mmol/mol{Hb}
+% HbF haltige Zellen	%{cells}
+min.	min
+Âµg/g (TG)	ug/g
+Leu/uL	{WBC}/ul
+mmol/mol Kreatinin	mmol/mol{creat}
+/100 Leuk	/100{WBC}
+Ery/uL	{Ery}/ul
+ÂµIU/ml	u[IU]/mL
+Âµl	uL
+Std.	h
+U/24h	U/(24.h)
+nmol/umolCreatinin	nmol/umol{creat}
