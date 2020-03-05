@@ -40,6 +40,8 @@ stages:
 
 check file tidiness:
   extends: .job_defaults
+  variables:
+    IGNORE: ".git,*.min.js,*.min.css,*.md"
 
 hadolint:
   extends: .job_defaults
@@ -62,14 +64,27 @@ build:
     - export VERSION=$(cat .VERSION)
     - docker build -t $IMAGE_PATH:$CI_COMMIT_SHORT_SHA --build-arg VERSION=$VERSION .
     - docker push $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
-  except:
-    - tags
 
 trivy:
   extends: .job_defaults
   allow_failure: true
   variables:
     IMAGE_FQN: $DOCKER_REGISTRY$PROJECT_PATH:$CI_COMMIT_SHORT_SHA
+
+e2e:
+  image:
+    name: docker/compose:1.25.4
+    entrypoint: [""]
+  stage: test
+  extends:
+    - .job_defaults
+    - .docker_registry
+  before_script:
+    - export IMAGE_TAG=$CI_COMMIT_SHORT_SHA
+  script:
+    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.yml up --abort-on-container-exit
+  after_script:
+    - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.yml down --remove-orphans
 
 push to harbor:
   image: docker:git

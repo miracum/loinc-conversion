@@ -78,14 +78,23 @@ const utils = ucum.UcumLhcUtils.getInstance();
 	}+
  ]
 */
-app.post("/conversions", async (request, response) => {
-  const result = [];
+app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
+  let result = [];
 
-  if (!request.body) {
-    return response.status(400).send("Empty request body.");
+  let requestBody = request.body;
+
+  if (
+    Object.entries(requestBody).length === 0 &&
+    requestBody.constructor === Object
+  ) {
+    return response.status(400).send({ error: "Empty request body." });
   }
 
-  for (const entry of request.body) {
+  if (!Array.isArray(request.body)) {
+    requestBody = [request.body];
+  }
+
+  for (const entry of requestBody) {
     const rsEntry = {};
     if ("id" in entry) {
       rsEntry.id = entry.id;
@@ -103,9 +112,13 @@ app.post("/conversions", async (request, response) => {
         throw new Error("Could not parse value.", { value: entry.value });
       }
 
+      if (!loinc) {
+        throw new Error("LOINC code is null or empty");
+      }
+
       // Check if input LOINC exists:
       if (!(loinc in loincUnits)) {
-        throw new Error("Invalid loinc", { code: loinc });
+        throw new Error(`Invalid LOINC: ${loinc}`, { loinc });
       }
 
       // Convert input unit if UCUM synonym exists:
@@ -144,11 +157,17 @@ app.post("/conversions", async (request, response) => {
     result.push(rsEntry);
   }
 
+  let status = 200;
+
   if (result.some(entry => entry.error)) {
-    return response.status(422).send(result);
+    status = 422;
   }
 
-  return response.send(result);
+  if (result.length === 1) {
+    [result] = result;
+  }
+
+  return response.status(status).send(result);
 });
 
 app.get("/health", async (_req, res) => {

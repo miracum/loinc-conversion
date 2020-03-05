@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  loinc-conversion:
+    image: docker.miracum.org/miracum-etl/loinc-conversion:$IMAGE_TAG
+
+  tester:
+    image: docker.miracum.org/miracum-etl/loinc-conversion:$IMAGE_TAG
+    command: ["run", "tests:e2e"]
+    environment:
+      - API_ENDPOINT=http://loinc-conversion:8080
+    depends_on:
+      - loinc-conversion
