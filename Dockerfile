@@ -1,4 +1,4 @@
-FROM node:13.8-alpine
+FROM node:13.10-alpine
 WORKDIR /opt/loinc-conversion
 
 COPY package*.json ./
