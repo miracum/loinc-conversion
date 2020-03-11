@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   loinc-conversion:
-    image: docker.miracum.org/miracum-etl/loinc-conversion:v1.7.0
+    image: docker.miracum.org/miracum-etl/loinc-conversion:v1.8.1
     restart: unless-stopped
     ports:
       - "8080:8080"
