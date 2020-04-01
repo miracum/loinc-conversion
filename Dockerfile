@@ -1,4 +1,4 @@
-FROM node:13.10-alpine
+FROM node:13.12-alpine
 WORKDIR /opt/loinc-conversion
 
 COPY package*.json ./
@@ -10,8 +10,9 @@ COPY src src
 COPY tests/e2e tests/e2e
 COPY data data
 
+USER node
 EXPOSE 8080
 HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/health || exit 1
 ENV NODE_ENV=production
 ENTRYPOINT [ "npm" ]
-CMD [ "run", "start" ]
+CMD ["run", "start"]
