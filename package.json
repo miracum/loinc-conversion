@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "dependencies": {
     "@lhncbc/ucum-lhc": "4.1.1",
-    "csv-parse": "4.8.8",
+    "csv-parse": "^4.9.0",
     "express": "4.17.1",
     "winston": "3.2.1"
   },

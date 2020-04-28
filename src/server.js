@@ -8,9 +8,27 @@ const log = require("./config/winston");
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
+const arbUnits = {};
 const loincUnits = {};
 const synonyms = {};
 const conversionUnits = {};
+
+// Read arb'U = arbitrary unit conversions (UCUM [arb'U] requires special
+// consideration, as it CANNOT BE CONVERTED):
+log.info("Parsing 'arb_U.tsv'...");
+try {
+  const arbCsv = parse(fs.readFileSync("data/arb_U.tsv", "utf-8"), {
+    columns: true,
+    delimiter: "\t"
+  });
+
+  for (const entry of arbCsv) {
+    arbUnits[entry.FROM_UNIT] = entry.TO_UNIT;
+  }
+} catch (e) {
+  log.info("Could not load 'arb_U.tsv'.", e);
+  process.exit(-1);
+}
 
 // Read official loinc database:
 log.info("Parsing 'Loinc.csv'...");
@@ -20,7 +38,22 @@ try {
   });
 
   for (const entry of loincCsv) {
-    loincUnits[entry.LOINC_NUM] = entry.EXAMPLE_UCUM_UNITS;
+    // Special handling for [arb'U] = arbitrary unit as it CANNOT BE CONVERTED,
+    // use entry from arb_U.tsv:
+    if (entry.EXAMPLE_UCUM_UNITS == "[arb'U]") {
+      const ex_units = entry.EXAMPLE_UNITS.split(";");
+      for (const ex_unit of ex_units) {
+        if (ex_unit in arbUnits) {
+          loincUnits[entry.LOINC_NUM] = arbUnits[ex_unit];
+          break;
+        }
+      }
+      if (!(entry.LOINC_NUM in loincUnits)) {
+        loincUnits[entry.LOINC_NUM] = "[arb'U]";
+      }
+    } else {
+      loincUnits[entry.LOINC_NUM] = entry.EXAMPLE_UCUM_UNITS;
+    }
   }
 } catch (e) {
   log.info(
@@ -145,15 +178,24 @@ app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
       }
 
       // Convert using UCUM lib:
+      // HACK: arbitrary Unit IU cannot be converted, replace w/ {arbitrary:IU}:
       const targetUnit = loincUnits[loinc];
-      rsEntry.value = utils.convertUnitTo(unit, value, targetUnit).toVal;
-      rsEntry.unit = targetUnit;
+      const conversion = utils.convertUnitTo(
+        unit.replace("[IU]", "{arbitrary:IU}"),
+        value,
+        targetUnit.replace("[IU]", "{arbitrary:IU}")
+      );
+      if (conversion["status"] != "succeeded") {
+        throw new Error(`Cannot convert: ${unit} to ${targetUnit}`, { unit, targetUnit });
+      }
+      rsEntry.value = conversion.toVal;
+      rsEntry.unit = targetUnit.replace("{arbitrary:IU}", "[IU]");
       rsEntry.loinc = loinc;
     } catch (e) {
       rsEntry.error = `Exception during conversion: ${e}`;
     }
 
-    // Result JSON:
+  // Result JSON:
     result.push(rsEntry);
   }
 

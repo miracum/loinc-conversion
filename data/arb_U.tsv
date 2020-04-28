@@ -1,0 +1,10 @@
+FROM_UNIT	TO_UNIT
+U/L	U/L
+U/mL	U/mL
+U	U
+Units/mL	U/mL
+Elisa units	{Elisa_U}
+Elisa Units	{Elisa_U}
+EU/mL	{Elisa_U}/mL
+kEU/L	k{Elisa_U}/L
+EU/mL	{Elisa_U}/mL
