@@ -29,6 +29,10 @@ include:
     file: "/versioning/.semantic-release-get-version.yml"
   - project: "devops/ci-templates"
     file: "/image-scanning/.trivy-scan.yml"
+  - project: "devops/ci-templates"
+    file: "/release/.push-to-registry.yml"
+  - project: "devops/ci-templates"
+    file: "/release/.gitlab-release.yml"
 
 stages:
   - preflight
@@ -60,20 +64,25 @@ build:
   extends:
     - .job_defaults
     - .docker_registry
+  variables:
+    DOCKER_BUILDKIT: 1
+    BUILDKIT_PROGRESS: plain
   script:
     - export VERSION=$(cat .VERSION)
-    - docker build -t $IMAGE_PATH:$CI_COMMIT_SHORT_SHA --build-arg VERSION=$VERSION .
+    - docker build -t $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
+      --build-arg VERSION=$VERSION
+      --build-arg GIT_REF=$CI_COMMIT_SHA
+      --build-arg BUILD_TIME="$(date -Is)" .
     - docker push $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
 
 trivy:
   extends: .job_defaults
-  allow_failure: true
   variables:
     IMAGE_FQN: $DOCKER_REGISTRY$PROJECT_PATH:$CI_COMMIT_SHORT_SHA
 
 e2e:
   image:
-    name: docker/compose:1.25.4
+    name: docker/compose:1.26.2
     entrypoint: [""]
   stage: test
   extends:
@@ -86,22 +95,5 @@ e2e:
   after_script:
     - docker-compose -p $CI_PROJECT_NAME-$CI_JOB_ID -f tests/e2e/docker-compose.yml down --remove-orphans
 
-push to harbor:
-  image: docker:git
-  stage: release
+push to registry:
   extends: .docker_registry
-  script:
-    - export IMAGE_TAG=v$(cat .VERSION)
-    - docker pull $IMAGE_PATH:$CI_COMMIT_SHORT_SHA
-    - docker tag $IMAGE_PATH:$CI_COMMIT_SHORT_SHA $IMAGE_PATH:$IMAGE_TAG
-    - docker push $IMAGE_PATH:$IMAGE_TAG
-  only:
-    - master
-
-create gitlab  release:
-  image: docker.miracum.org/miracum-devops/semantic-release:v17
-  stage: release
-  script:
-    - npx semantic-release
-  only:
-    - master
