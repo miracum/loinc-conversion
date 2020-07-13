@@ -3,10 +3,15 @@ const fs = require("fs");
 const parse = require("csv-parse/lib/sync");
 const express = require("express");
 const ucum = require("@lhncbc/ucum-lhc");
-const log = require("./config/winston");
+const log = require("pino")();
+const pino = require("pino-http")();
 
 const app = express();
 app.use(express.json({ limit: "10mb" }));
+
+if (process.env.LOG_REQUESTS) {
+  app.use(pino);
+}
 
 const arbUnits = {};
 const loincUnits = {};
@@ -19,7 +24,7 @@ log.info("Parsing 'arb_U.tsv'...");
 try {
   const arbCsv = parse(fs.readFileSync("data/arb_U.tsv", "utf-8"), {
     columns: true,
-    delimiter: "\t"
+    delimiter: "\t",
   });
 
   for (const entry of arbCsv) {
@@ -34,17 +39,17 @@ try {
 log.info("Parsing 'Loinc.csv'...");
 try {
   const loincCsv = parse(fs.readFileSync("data/Loinc.csv", "utf-8"), {
-    columns: true
+    columns: true,
   });
 
   for (const entry of loincCsv) {
     // Special handling for [arb'U] = arbitrary unit as it CANNOT BE CONVERTED,
     // use entry from arb_U.tsv:
-    if (entry.EXAMPLE_UCUM_UNITS == "[arb'U]") {
-      const ex_units = entry.EXAMPLE_UNITS.split(";");
-      for (const ex_unit of ex_units) {
-        if (ex_unit in arbUnits) {
-          loincUnits[entry.LOINC_NUM] = arbUnits[ex_unit];
+    if (entry.EXAMPLE_UCUM_UNITS === "[arb'U]") {
+      const exUnits = entry.EXAMPLE_UNITS.split(";");
+      for (const exUnit of exUnits) {
+        if (exUnit in arbUnits) {
+          loincUnits[entry.LOINC_NUM] = arbUnits[exUnit];
           break;
         }
       }
@@ -56,8 +61,9 @@ try {
     }
   }
 } catch (e) {
-  log.info(
-    "Could not load 'Loinc.csv'. Did you download the official 'LOINC Table File (CSV)' from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?"
+  log.error(
+    "Could not load 'Loinc.csv'. Did you download the official 'LOINC Table File (CSV)' from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?",
+    e
   );
   process.exit(-1);
 }
@@ -67,14 +73,14 @@ log.info("Parsing 'synonyms.tsv'...");
 try {
   const synonymsCsv = parse(fs.readFileSync("data/synonyms.tsv", "utf-8"), {
     columns: true,
-    delimiter: "\t"
+    delimiter: "\t",
   });
 
   for (const entry of synonymsCsv) {
     synonyms[entry.NOT_UCUM] = entry.UCUM;
   }
 } catch (e) {
-  log.info("Could not load 'synonyms.tsv'.", e);
+  log.error("Could not load 'synonyms.tsv'.", e);
   process.exit(-1);
 }
 
@@ -83,7 +89,7 @@ log.info("Parsing 'conversion.tsv'...");
 try {
   const conversionCsv = parse(fs.readFileSync("data/conversion.tsv", "utf-8"), {
     columns: true,
-    delimiter: "\t"
+    delimiter: "\t",
   });
 
   for (const entry of conversionCsv) {
@@ -92,7 +98,7 @@ try {
     loincUnits[entry.TARGET_LOINC] = entry.TO_UNIT;
   }
 } catch (e) {
-  log.info("Could not load 'conversion.csv'.");
+  log.error("Could not load 'conversion.csv'.", e);
   process.exit(-1);
 }
 
@@ -185,9 +191,14 @@ app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
         value,
         targetUnit.replace("[IU]", "{arbitrary:IU}")
       );
-      if (conversion["status"] != "succeeded") {
-        throw new Error(`Cannot convert: ${unit} to ${targetUnit}`, { unit, targetUnit });
+
+      if (conversion.status !== "succeeded") {
+        throw new Error(`Cannot convert: ${unit} to ${targetUnit}`, {
+          unit,
+          targetUnit,
+        });
       }
+
       rsEntry.value = conversion.toVal;
       rsEntry.unit = targetUnit.replace("{arbitrary:IU}", "[IU]");
       rsEntry.loinc = loinc;
@@ -195,13 +206,13 @@ app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
       rsEntry.error = `Exception during conversion: ${e}`;
     }
 
-  // Result JSON:
+    // Result JSON:
     result.push(rsEntry);
   }
 
   let status = 200;
 
-  if (result.some(entry => entry.error)) {
+  if (result.some((entry) => entry.error)) {
     status = 422;
   }
 
@@ -212,11 +223,13 @@ app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
   return response.status(status).send(result);
 });
 
-app.get("/health", async (_req, res) => {
-  return res.json({
-    status: "healthy",
-    description: "application is healthy"
-  });
+app.get(["/health", "/api/v1/health"], async (_req, res) => {
+  return res
+    .json({
+      status: "healthy",
+      description: "application is healthy",
+    })
+    .status(200);
 });
 
 app.listen(8080, () => {

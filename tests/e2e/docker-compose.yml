@@ -3,6 +3,8 @@ version: "3.7"
 services:
   loinc-conversion:
     image: docker.miracum.org/miracum-etl/loinc-conversion:$IMAGE_TAG
+    environment:
+      LOG_REQUESTS: "true"
 
   tester:
     image: docker.miracum.org/miracum-etl/loinc-conversion:$IMAGE_TAG
