@@ -18,7 +18,7 @@ content-type: application/json
     {
         "id": 12,
         "loinc": "26464-8",
-        "unit": "x 10^6/ul",
+        "unit": "x10^6/ul",
         "value": 12
     }
 ]
@@ -225,9 +225,3 @@ content-type: application/json
         "unit": "mg/dl"
     }
 ]
-
-{
-    "loinc": "5445",
-    "unit": "mg/dl",
-    "factor": "gfgfsagfdws"
-}

@@ -1,20 +1,22 @@
 FROM node:14.7-alpine
 WORKDIR /opt/loinc-conversion
 
+COPY data data
+
 COPY package*.json ./
 RUN npm ci --no-optional
 
-COPY data data
 COPY src src
 # while generally considered a bad practice, in this case the small size
 # of the test data makes it acceptable to copy them to the production image.
 # at least for now...
 COPY tests/e2e tests/e2e
 
-USER node
+USER 11111
 EXPOSE 8080
 HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/health || exit 1
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    NO_UPDATE_NOTIFIER=true
 ENTRYPOINT [ "npm" ]
 CMD ["run", "start"]
 
