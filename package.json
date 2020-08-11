@@ -1,12 +1,22 @@
 {
-  "name": "lab-unit-harmonizer",
+  "name": "loinc-converter",
   "version": "0.0.1",
   "description": "Harmonizes LOINC codes and units.",
   "main": "src/server.js",
   "dependencies": {
+    "@cloudnative/health-connect": "^2.1.0",
     "@lhncbc/ucum-lhc": "4.1.3",
+    "@opentelemetry/api": "^0.10.2",
+    "@opentelemetry/core": "^0.10.2",
+    "@opentelemetry/exporter-jaeger": "^0.10.2",
+    "@opentelemetry/node": "^0.10.2",
+    "@opentelemetry/plugin-express": "0.9.0",
+    "@opentelemetry/plugin-http": "0.10.2",
+    "@opentelemetry/propagator-jaeger": "0.9.0",
+    "@opentelemetry/tracing": "^0.10.2",
     "csv-parse": "4.11.1",
     "express": "4.17.1",
+    "http-status-codes": "^1.4.0",
     "pino": "6.5.0",
     "pino-http": "5.2.0"
   },

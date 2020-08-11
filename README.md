@@ -3,33 +3,27 @@
 _loinc-conversion_ is a _REST_-server that accepts lists of `(LOINC-code, unit, value?)` and returns corresponding lists of `(LOINC-code, UCUM-unit, value)`.
 It provides three distinct functions:
 
-1. **Standardization of _UCUM_ units**  
+1. **Standardization of _UCUM_ units**
    Returns a standardized _UCUM_ unit for each _LOINC_ code. (In most cases, the
    returned _UCUM_ unit is the `EXAMPLE_UNIT` defined in the official `Loinc.csv`
    by Regenstrief.)
 
-2. **Conversion of non-_UCUM_ units**  
+2. **Conversion of non-_UCUM_ units**
    For selected common (especially in Germany) non-_UCUM_ laboratory units the
    valid _UCUM_ unit is provided.
 
-3. **Conversion of _LOINC_ codes**  
+3. **Conversion of _LOINC_ codes**
    Selected _LOINC_ codes that represent the same concept, and where a unambiguous
    conversion factor exists (e.g. `718-7 = "Hemoglobin [Mass/volume] in Blood"` and
-   `59260-0 = "Hemoglobin [Moles/volume] in Blood"`), are converted to an arbitrarily*
-   selected *LOINC* code (`718-7` in the example).  
-   \*The conversion *target* is the *more common\* unit - which is highly subjective.
+   `59260-0 = "Hemoglobin [Moles/volume] in Blood"`), are converted to an arbitrarily\*
+   selected *LOINC* code (`718-7` in the example).
 
-## Best practice
-
-Do not use the _REST_-server to convert values (i.e. **do not use `value`
-to convert millions of test results**). Instead, use the _REST_-server to **query
-conversion factors and apply them to your dataset** (the default value for `value`
-is `1.0`, the resulting `value` is therefore the conversion factor).
+   \*The conversion _target_ is the _more common_ unit - which is highly subjective.
 
 ## REST server description
 
-Endpoint: `POST /conversions`  
-Content-type: `application/json`  
+Endpoint: `POST /conversions`
+Content-type: `application/json`
 Body:
 
 ```json
@@ -37,8 +31,8 @@ Body:
   {
     "loinc": "str, e.g. 718-7",
     "unit": "UCUM unit, e.g. g/dL",
-    "value": float, optional(=1.0),
-    "id": anything_you_want, optional
+    "value": "float, optional(=1.0)",
+    "id": "anything_you_want, optional"
   }
 ]
 ```
