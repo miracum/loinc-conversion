@@ -20,6 +20,14 @@ const provider = new NodeTracerProvider({
       enabled: true,
       path: "@opentelemetry/plugin-express",
     },
+    http: {
+      path: "@opentelemetry/plugin-http",
+      ignoreIncomingPaths: [
+        "/live",
+        "/health",
+        "/ready"
+      ]
+    },
   },
   propagator: new JaegerHttpTracePropagator(),
 });
