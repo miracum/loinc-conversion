@@ -1,4 +1,4 @@
-FROM node:14.7-alpine
+FROM node:14.8-alpine
 WORKDIR /opt/loinc-conversion
 
 COPY data data
