@@ -13,7 +13,7 @@ check file tidiness:
 e2e:
   stage: test
   image:
-    name: docker/compose:1.26.2
+    name: docker/compose:1.27.3
     entrypoint: [""]
   extends:
     - .job_defaults
