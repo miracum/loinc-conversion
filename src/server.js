@@ -13,7 +13,6 @@ const {
   JaegerHttpTracePropagator,
 } = require("@opentelemetry/propagator-jaeger");
 
-// Use Jaeger propagator
 const provider = new NodeTracerProvider({
   plugins: {
     express: {
@@ -22,17 +21,16 @@ const provider = new NodeTracerProvider({
     },
     http: {
       path: "@opentelemetry/plugin-http",
-      ignoreIncomingPaths: [
-        "/live",
-        "/health",
-        "/ready"
-      ]
+      ignoreIncomingPaths: [/^\/(live|ready|health)/],
     },
   },
   propagator: new JaegerHttpTracePropagator(),
 });
 const exporter = new JaegerExporter({
-  serviceName: "loinc-converter",
+  serviceName:
+    process.env.JAEGER_SERVICE_NAME ||
+    process.env.OTEL_SERVICE_NAME ||
+    "loinc-converter",
 });
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
 provider.register();
@@ -46,7 +44,7 @@ if (process.env.LOG_REQUESTS) {
   app.use(pino);
 }
 
-let healthcheck = new health.HealthChecker();
+const healthcheck = new health.HealthChecker();
 app.use("/live", health.LivenessEndpoint(healthcheck));
 app.use("/ready", health.ReadinessEndpoint(healthcheck));
 app.use("/health", health.HealthEndpoint(healthcheck));
@@ -100,7 +98,9 @@ try {
   }
 } catch (e) {
   log.error(
-    "Could not load 'loinc.csv'. Did you download the official 'LOINC Table File (CSV)' from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?",
+    "Could not load 'loinc.csv'." +
+      "Did you download the official 'LOINC Table File (CSV)'" +
+      "from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?",
     e
   );
   process.exit(1);
@@ -204,13 +204,13 @@ app.get("/api/v1/conversions", async (req, resp) => {
   const { loinc, unit, value } = req.query;
 
   let result = {};
-  let status = HttpStatus.OK;
+  let status = HttpStatus.StatusCodes.OK;
 
   try {
     result = convert(loinc, unit, value);
   } catch (e) {
     result.error = `Exception during conversion: ${e}`;
-    status = HttpStatus.UNPROCESSABLE_ENTITY;
+    status = HttpStatus.StatusCodes.BAD_REQUEST;
   }
 
   return resp.status(status).send(result);
@@ -238,7 +238,7 @@ app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
     requestBody.constructor === Object
   ) {
     return response
-      .status(HttpStatus.BAD_REQUEST)
+      .status(HttpStatus.StatusCodes.BAD_REQUEST)
       .send({ error: "Empty request body." });
   }
 
@@ -263,10 +263,10 @@ app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
     result.push(rsEntry);
   }
 
-  let status = HttpStatus.OK;
+  let status = HttpStatus.StatusCodes.OK;
 
   if (result.some((entry) => entry.error)) {
-    status = HttpStatus.UNPROCESSABLE_ENTITY;
+    status = HttpStatus.StatusCodes.BAD_REQUEST;
   }
 
   if (result.length === 1) {

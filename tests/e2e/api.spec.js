@@ -1,6 +1,7 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const waitOn = require("wait-on");
+const HttpStatus = require("http-status-codes");
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -35,7 +36,7 @@ describe("API Endpoint", () => {
     const requestBody = { loinc: "718-7", value: 12, id: 1, unit: "g/dL" };
 
     api.send(requestBody).then((response) => {
-      expect(response).to.have.status(200);
+      expect(response).to.have.status(HttpStatus.StatusCodes.OK);
       done();
     });
   });
@@ -44,7 +45,7 @@ describe("API Endpoint", () => {
     const requestBody = { loinc: "718-7", value: 12, id: 1, unit: "g/dL" };
 
     api.send(requestBody).then((response) => {
-      expect(response).to.have.status(200);
+      expect(response).to.have.status(HttpStatus.StatusCodes.OK);
       expect(response.body).not.be.an.instanceof(Array);
       done();
     });
@@ -61,7 +62,7 @@ describe("API Endpoint", () => {
     ];
 
     api.send(requestBody).then((response) => {
-      expect(response).to.have.status(200);
+      expect(response).to.have.status(HttpStatus.StatusCodes.OK);
       done();
     });
   });
@@ -70,14 +71,14 @@ describe("API Endpoint", () => {
     const requestBody = {};
 
     api.send(requestBody).then((response) => {
-      expect(response).to.have.status(400);
+      expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
       done();
     });
   });
 
   it("fails if not given a unit", (done) => {
     api.send({ loinc: "718-7", value: 12, id: 1 }).then((response) => {
-      expect(response).to.have.status(422);
+      expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
       done();
     });
   });
@@ -86,7 +87,7 @@ describe("API Endpoint", () => {
     api
       .send({ loinc: null, value: 12, unit: "g/dL", id: 1 })
       .then((response) => {
-        expect(response).to.have.status(422);
+        expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
         done();
       });
   });
@@ -97,7 +98,7 @@ describe("UCUM Unit Conversion", () => {
     api
       .send({ loinc: "718-7", value: 12, unit: "g/dl", id: 1 })
       .then((response) => {
-        expect(response).to.have.status(200);
+        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
         expect(response.body.unit).to.equal("g/dL");
         done();
       });
@@ -122,7 +123,7 @@ describe("LOINC Harmonization", () => {
       api
         .send({ loinc: inputLoinc, value: inputValue, unit: inputUnit })
         .then((response) => {
-          expect(response).to.have.status(200);
+          expect(response).to.have.status(HttpStatus.StatusCodes.OK);
           const { body } = response;
 
           expect(body.loinc).to.equal(expectedLoinc);
