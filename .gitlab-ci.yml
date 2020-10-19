@@ -5,11 +5,6 @@ include:
   - project: "devops/ci-templates"
     file: "/standard/.container-build.yml"
 
-check file tidiness:
-  extends: .job_defaults
-  variables:
-    IGNORE: ".git,*.min.js,*.min.css,*.md"
-
 e2e:
   stage: test
   image:
