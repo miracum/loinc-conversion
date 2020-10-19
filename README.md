@@ -16,7 +16,7 @@ It provides three distinct functions:
    Selected _LOINC_ codes that represent the same concept, and where a unambiguous
    conversion factor exists (e.g. `718-7 = "Hemoglobin [Mass/volume] in Blood"` and
    `59260-0 = "Hemoglobin [Moles/volume] in Blood"`), are converted to an arbitrarily\*
-   selected *LOINC* code (`718-7` in the example).
+   selected _LOINC_ code (`718-7` in the example).
 
    \*The conversion _target_ is the _more common_ unit - which is highly subjective.
 
