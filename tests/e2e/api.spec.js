@@ -109,6 +109,7 @@ describe("LOINC Harmonization", () => {
   it.each([
     ["59260-0", 10, "mmol/l", "718-7", 16.1, "g/dL"],
     ["718-7", 3, "g/dl", "718-7", 3, "g/dL"],
+    ["62238-1", 3, "ml/min/1,73m²", "62238-1", 3, "mL/min/{1.73_m2}"],
   ])(
     "converts %s (%d %s) to %s (%d %s)",
     (
