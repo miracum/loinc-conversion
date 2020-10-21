@@ -1,9 +1,4 @@
 NOT_UCUM	UCUM
-% HbF haltige Zellen	%{cells}
-% der Neutr	/100{neutrophils}
-%d.Erythrozyt	%{RBC}
-%d.Leukozyten	%{WBC}
-%d.ges.CK	{CKtotal}
 *1000/ul	1000/ul
 /100 Leu	/100{WBC}
 /100 Leuk	/100{WBC}
@@ -11,82 +6,54 @@ NOT_UCUM	UCUM
 /100Leu	/100{WBC}
 /100Leuk.	/100{WBC}
 /µl	/ul
+% der Neutr	/100{neutrophils}
+% HbF haltige Zellen	%{cells}
+%d.Erythrozyt	%{RBC}
+%d.ges.CK	{CKtotal}
+%d.Leukozyten	%{WBC}
 10^3/µL	10*3/uL
 8*10hoch8 Ery	pmol/8*10{RBCs}
 BE	[beth'U]
-BU	[BETH'U]
 Bethesda-Units	[beth'U]
+BU	[BETH'U]
 CU	[arb'U]
-E/L	[IU]/l
 E/l	[IU]/l
-Ery/uL	{Ery}/ul
+E/L	[IU]/l
 Ery/ul	{Ery}/ul
-G/l	10^3/µl
-GPT/L	10*3/ul
-GPT/l	10*3/ul
-GPt/L	10*3/ul
-GPt/l	10*3/ul
-IE/l	[IU]/l
-IE/mL	[IU]/ml
-IE/ml	[IU]/ml
-IU/L	[IU]/l
-IU/ML	[IU]/ml
-IU/l	[IU]/l
-IU/l EC	[IU]/L{RBC}
-IU/mL	[IU]/ml
-IU/ml	[IU]/ml
-IkU/l	[IU]/mL
-Index	{index_value}
-Kopien / ml	{copies}/ml
-Kopien/10^5Z.	{copies}/(10*5{Cells})
-Kopien/10^6Z.	{copies}/(10*6{Cells})
-Kopien/mL	{copies}/ml
-Kopien/ml	{copies}/ml
-Leu/uL	{WBC}/ul
-Leu/ul	{WBC}/ul
-MPT/L	1/ul
-MPt/L	1/ul
-Mio/µl	10*6/uL
-O/oo	/10*4
-RE/ml	[arb'U]
-Ratio	/1
-S/CO	{s_co_ratio}
-Std.	h
-Stunden	h
-TPt/L	10*6/ul
-TPt/l	10*6/ul
-Titer	{titer}
-Tsd/µl	10*3/ul
-U/24h	U/(24.h)
-U/g Crea	U/g{creat}
-U/gHb	U/g{Hb}
-U/molKre	U/mol{creat}
-Uhr	{clock time}
-Units	[arb'U]
-VE	{s_co_ratio}.10
-Vol%	%{vol}
-Zellen	{cells}
-Zellen/ul	{cells}/ul
-Zellen/µL	{cells}/ul
+Ery/uL	{Ery}/ul
 g GAG / mol Krea	g{GAG}/mol{creat}
 g/24h	g/(24.h)
 g/dl	g/dL
 g/g Creatinin	g/g{creat}
+G/l	10^3/µl
 g/molKrea	g/mol{creat}
 gHb/dl	g{Hb}/dl
+GPt/l	10*3/ul
+GPt/L	10*3/ul
+GPT/l	10*3/ul
+GPT/L	10*3/ul
+IE/l	[IU]/l
+IE/ml	[IU]/ml
+IE/mL	[IU]/ml
+IkU/l	[IU]/mL
+Index	{index_value}
+IU/l	[IU]/l
+IU/L	[IU]/l
+IU/l EC	[IU]/L{RBC}
+IU/ml	[IU]/ml
+IU/mL	[IU]/ml
+IU/ML	[IU]/ml
+Kopien / ml	{copies}/ml
+Kopien/10^5Z.	{copies}/(10*5{Cells})
+Kopien/10^6Z.	{copies}/(10*6{Cells})
+Kopien/ml	{copies}/ml
+Kopien/mL	{copies}/ml
+Leu/ul	{WBC}/ul
+Leu/uL	{WBC}/ul
 lTFR/logFer	{ratio}
 mE/ml	mU/ml
-mIE/mL	[IU]/l
-mIE/ml	[IU]/l
-mIU/mL	[IU]/l
-mIU/ml	[IU]/l
-mL/min/1,73	ml/min/(173/100)
-mL/s/1.72qm	ml/s/(172/100.m2)
-mU/mg Protein	mU/mg{prot}
-mU/ml	mU/mL
 mg/24h	mg/(24.h)
 mg/24h/kg	mg/(24.h)/kg
-mg/SammZeit	mg/{Time}
 mg/dl Erythrozyten	mg/dL{RBCs}
 mg/g Crea	mg/g{creat}
 mg/g Krea	mg/g{creat}
@@ -97,19 +64,25 @@ mg/l FEU	mg/L{FEU}
 mg/m^2/d	mg/m2/d
 mg/mmolKre	mg/mmol{creat}
 mg/mmolkrea	mg/mmol{creat}
+mg/SammZeit	mg/{Time}
 micromol/L	umol/L
+mIE/ml	[IU]/l
+mIE/mL	[IU]/l
 min.	min
+Mio/µl	10*6/uL
+mIU/ml	[IU]/l
+mIU/mL	[IU]/l
 ml/min	mL/min
+mL/min/1,73	ml/min/(173/100)
 ml/min/1,73m²	mL/min/{1.73_m2}
 ml/min/1.73 m2	mL/min/{1.73_m2}
 ml/min/1.73qm	mL/min/{1.73_m2}
+mL/s/1.72qm	ml/s/(172/100.m2)
 mlU/l	m[IU]/l
 mm/1h	mm/(1.h)
 mm/2h	mm/(2.h)
 mmHg	mm[Hg]
 mmol/24h	mmol/(24.h)
-mmol/SammZeit	mmol/{time}
-mmol/Sammelzeit	mmol/{time}
 mmol/l	mmol/L
 mmol/l z.Quadrat	mmol2/L
 mmol/mmol Crea	mmol/mmol{creat}
@@ -120,50 +93,77 @@ mmol/mol Hb	mmol/mol{Hb}
 mmol/mol Krea	mmol/mol{creat}
 mmol/mol Kreatinin	mmol/mol{creat}
 mmol/molKrea	mmol/mol{crea}
+mmol/Sammelzeit	mmol/{time}
+mmol/SammZeit	mmol/{time}
 mmol²/l²	mmol2/l2
 mol/molKre	mol/mol{creat}
 mol/molKrea	mol/mol{creat}
 mosmol/kg	mosm/kg
+MPt/L	1/ul
+MPT/L	1/ul
+mU/mg Protein	mU/mg{prot}
+mU/ml	mU/mL
 ng/mL FEU	ng{FEU}/ml
 nmol/(L*s)	nmol/(l.s)
-nmol/L*s	nmol/(l.s)
 nmol/h*gHb	nmol/(h.g{Hb})
+nmol/L*s	nmol/(l.s)
 nmol/umolCreatinin	nmol/umol{creat}
 o/oo	/10*4
+O/oo	/10*4
 pro 100 Leukos	/100{WBC}
 pro 100 Leukozyten	/100{WBC}
 pro 1000	1/10*3.{RBC}
 pro Feld	[HPF]
 pro µL	1/ul
+Ratio	/1
+RE/ml	[arb'U]
+S/CO	{s_co_ratio}
 sec	s
 sec.	s
+Std.	h
+Stunden	h
+Titer	{titer}
+TPt/l	10*6/ul
+TPt/L	10*6/ul
+Tsd/µl	10*3/ul
+U/24h	U/(24.h)
+U/g Crea	U/g{creat}
+U/gHb	U/g{Hb}
+U/molKre	U/mol{creat}
 uE/ml	uU/ml
 ug/24h	ug/(24.h)
 ug/gkrea	ug/g{creat}
+Uhr	{clock time}
+Units	[arb'U]
+VE	{s_co_ratio}.10
+Vol%	%{vol}
 x 10^-3	1/10*3
 x10^3/ul	10*3/ul
 x10^3/µl	10*3/ul
 x10^6/ul	10*6/ul
 x10^6/µl	10*6/ul
+Zellen	{cells}
+Zellen/ul	{cells}/ul
+Zellen/µL	{cells}/ul
 µE/ml	uU/ml
-µIU/ml	u[IU]/mL
-µU/ml	uU/ml
 µg*h/l	ug.h/l
 µg/24h	ug/(24.h)
-µg/L	ug/l
-µg/Sammelvol.	ug/{volume}
 µg/dl	ug/dl
 µg/g	ug/g
 µg/g (TG)	ug/g
 µg/g Stuhl	ug/g{feces}
 µg/l	ug/l
-µg/mL	ug/ml
+µg/L	ug/l
 µg/ml	ug/ml
+µg/mL	ug/ml
+µg/Sammelvol.	ug/{volume}
+µIU/ml	u[IU]/mL
 µl	uL
 µl/30Min	ul/(30.min)
 µlU/ml	u[IU]/ml
-µmol/(s*L)	ukat/l
 µmol/(s*l)	ukat/l
-µmol/L	umol/l
+µmol/(s*L)	ukat/l
 µmol/l	umol/l
+µmol/L	umol/l
 µmol/molKrea	umol/mol{creat}
+µU/ml	uU/ml
