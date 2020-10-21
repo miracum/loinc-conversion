@@ -100,7 +100,7 @@ mg/mmolkrea	mg/mmol{creat}
 micromol/L	umol/L
 min.	min
 ml/min	mL/min
-ml/min/1,73m²	ml/min/(173/100.m2)
+ml/min/1,73m²	mL/min/{1.73_m2}
 ml/min/1.73 m2	mL/min/{1.73_m2}
 ml/min/1.73qm	mL/min/{1.73_m2}
 mlU/l	m[IU]/l
