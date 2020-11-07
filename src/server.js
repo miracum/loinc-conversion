@@ -85,20 +85,29 @@ try {
       const exUnits = entry.EXAMPLE_UNITS.split(";");
       for (const exUnit of exUnits) {
         if (exUnit in arbUnits) {
-          loincUnits[entry.LOINC_NUM] = arbUnits[exUnit];
+          loincUnits[entry.LOINC_NUM] = {
+            exampleUcumUnits: arbUnits[exUnit],
+            display: entry.LONG_COMMON_NAME,
+          };
           break;
         }
       }
       if (!(entry.LOINC_NUM in loincUnits)) {
-        loincUnits[entry.LOINC_NUM] = "[arb'U]";
+        loincUnits[entry.LOINC_NUM] = {
+          exampleUcumUnits: "[arb'U]",
+          display: entry.LONG_COMMON_NAME,
+        };
       }
     } else {
-      loincUnits[entry.LOINC_NUM] = entry.EXAMPLE_UCUM_UNITS;
+      loincUnits[entry.LOINC_NUM] = {
+        exampleUcumUnits: entry.EXAMPLE_UCUM_UNITS,
+        display: entry.LONG_COMMON_NAME,
+      };
     }
   }
 } catch (e) {
   log.error(
-    "Could not load 'loinc.csv'." +
+    `Could not load 'loinc.csv': ${e}. ` +
       "Did you download the official 'LOINC Table File (CSV)'" +
       "from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?",
     e
@@ -132,11 +141,15 @@ try {
 
   for (const entry of conversionCsv) {
     conversionUnits[entry.FROM_LOINC] = entry;
+    const existingEntry = loincUnits[entry.TARGET_LOINC];
     // Custom conversion units supersede "default LOINC" units:
-    loincUnits[entry.TARGET_LOINC] = entry.TO_UNIT;
+    loincUnits[entry.TARGET_LOINC] = {
+      exampleUcumUnits: entry.TO_UNIT,
+      display: existingEntry?.LONG_COMMON_NAME,
+    };
   }
 } catch (e) {
-  log.error("Could not load 'conversion.csv'.", e);
+  log.error(`Could not load 'conversion.csv': ${e}`, e);
   process.exit(1);
 }
 
@@ -179,7 +192,7 @@ function convert(loinc, unit, value = 1.0) {
 
   // Convert using UCUM lib:
   // HACK: arbitrary Unit IU cannot be converted, replace w/ {arbitrary:IU}:
-  const targetUnit = loincUnits[loinc];
+  const targetUnit = loincUnits[loinc].exampleUcumUnits;
   const conversion = utils.convertUnitTo(
     unit.replace("[IU]", "{arbitrary:IU}"),
     value,
@@ -197,6 +210,7 @@ function convert(loinc, unit, value = 1.0) {
     value: conversion.toVal,
     unit: targetUnit.replace("{arbitrary:IU}", "[IU]"),
     loinc,
+    display: loincUnits[loinc].display,
   };
 }
 
