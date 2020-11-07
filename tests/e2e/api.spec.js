@@ -107,11 +107,35 @@ describe("UCUM Unit Conversion", () => {
 
 describe("LOINC Harmonization", () => {
   it.each([
-    ["59260-0", 10, "mmol/l", "718-7", 16.1, "g/dL"],
-    ["718-7", 3, "g/dl", "718-7", 3, "g/dL"],
-    ["62238-1", 3, "ml/min/1,73m²", "62238-1", 3, "mL/min/{1.73_m2}"],
+    [
+      "59260-0",
+      10,
+      "mmol/l",
+      "718-7",
+      16.1,
+      "g/dL",
+      "Hemoglobin [Mass/volume] in Blood",
+    ],
+    [
+      "718-7",
+      3,
+      "g/dl",
+      "718-7",
+      3,
+      "g/dL",
+      "Hemoglobin [Mass/volume] in Blood",
+    ],
+    [
+      "62238-1",
+      3,
+      "ml/min/1,73m²",
+      "62238-1",
+      3,
+      "mL/min/{1.73_m2}",
+      "Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula (CKD-EPI)",
+    ],
   ])(
-    "converts %s (%d %s) to %s (%d %s)",
+    "converts %s (%d %s) to %s (%d %s) with display '%s'",
     (
       inputLoinc,
       inputValue,
@@ -119,6 +143,7 @@ describe("LOINC Harmonization", () => {
       expectedLoinc,
       expectedValue,
       expectedUnit,
+      expectedDisplay,
       done
     ) => {
       api
@@ -130,6 +155,7 @@ describe("LOINC Harmonization", () => {
           expect(body.loinc).to.equal(expectedLoinc);
           expect(body.unit).to.equal(expectedUnit);
           expect(body.value).to.equal(expectedValue);
+          expect(body.display).to.equal(expectedDisplay);
 
           done();
         });
