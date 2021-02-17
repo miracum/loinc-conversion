@@ -103,6 +103,18 @@ describe("UCUM Unit Conversion", () => {
         done();
       });
   });
+
+  it("fails if given an inconvertible unit as part of the custom conversion table", (done) => {
+    api
+      .send({ loinc: "14854-4", value: 12, unit: "W/24.h" })
+      .then((response) => {
+        expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
+        expect(response.body.error).to.contain(
+          "(W/24).h cannot be converted to (nmol/24).h."
+        );
+        done();
+      });
+  });
 });
 
 describe("LOINC Harmonization", () => {

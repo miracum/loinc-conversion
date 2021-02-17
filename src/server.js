@@ -13,34 +13,39 @@ const {
   JaegerHttpTracePropagator,
 } = require("@opentelemetry/propagator-jaeger");
 
-const provider = new NodeTracerProvider({
-  plugins: {
-    express: {
-      enabled: true,
-      path: "@opentelemetry/plugin-express",
+if (
+  process.env.TRACING_ENABLED === "true" ||
+  process.env.TRACING_ENABLED === "1"
+) {
+  const provider = new NodeTracerProvider({
+    plugins: {
+      express: {
+        enabled: true,
+        path: "@opentelemetry/plugin-express",
+      },
+      http: {
+        path: "@opentelemetry/plugin-http",
+        ignoreIncomingPaths: [/^\/(live|ready|health)/],
+      },
     },
-    http: {
-      path: "@opentelemetry/plugin-http",
-      ignoreIncomingPaths: [/^\/(live|ready|health)/],
-    },
-  },
-  propagator: new JaegerHttpTracePropagator(),
-});
-const exporter = new JaegerExporter({
-  serviceName:
-    process.env.JAEGER_SERVICE_NAME ||
-    process.env.OTEL_SERVICE_NAME ||
-    "loinc-converter",
-});
-provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-provider.register();
+    propagator: new JaegerHttpTracePropagator(),
+  });
+  const exporter = new JaegerExporter({
+    serviceName:
+      process.env.JAEGER_SERVICE_NAME ||
+      process.env.OTEL_SERVICE_NAME ||
+      "loinc-converter",
+  });
+  provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+  provider.register();
+}
 
 const express = require("express");
 
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-if (process.env.LOG_REQUESTS) {
+if (process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1") {
   app.use(pino);
 }
 
@@ -180,11 +185,24 @@ function convert(loinc, unit, value = 1.0) {
     throw new Error(`Invalid UCUM unit: ${unit}`, { unit });
   }
 
-  // Convert according to custom conversion table:
+  // if the input LOINC is part of the "LOINC-to-LOINC" conversion table
+  // the input is first converted to the harmonized LOINC code and expected UCUM unit
   if (loinc in conversionUnits) {
-    value = utils.convertUnitTo(unit, value, conversionUnits[loinc].FROM_UNIT)
-      .toVal;
+    // first convert the input unit ("unit") to the expected
+    // source or "FROM_UNIT" from the loinc-specific conversion table
+    const toUnitCode = conversionUnits[loinc].FROM_UNIT;
+    const result = utils.convertUnitTo(unit, value, toUnitCode);
+    if (result.status !== "succeeded") {
+      throw new Error(
+        `Failed to convert ${unit} to ${toUnitCode} via the custom conversion table: ${result.msg}`,
+        { unit, toUnitCode }
+      );
+    }
+    value = result.toVal;
     // --> unit = conversion[loinc]["FROM_UNIT"];
+
+    // finally convert the source LOINC value (now in "FROM_UNIT" units)
+    // to the "TO_LOINC" to the "TO_UNIT" value using the specific conversion factor
     value *= conversionUnits[loinc].FACTOR;
     unit = conversionUnits[loinc].TO_UNIT;
     loinc = conversionUnits[loinc].TO_LOINC;
@@ -200,10 +218,13 @@ function convert(loinc, unit, value = 1.0) {
   );
 
   if (conversion.status !== "succeeded") {
-    throw new Error(`Cannot convert: ${unit} to ${targetUnit}`, {
-      unit,
-      targetUnit,
-    });
+    throw new Error(
+      `Cannot convert ${unit} to ${targetUnit}: ${conversion.msg}`,
+      {
+        unit,
+        targetUnit,
+      }
+    );
   }
 
   return {
