@@ -13,27 +13,32 @@ const {
   JaegerHttpTracePropagator,
 } = require("@opentelemetry/propagator-jaeger");
 
-const provider = new NodeTracerProvider({
-  plugins: {
-    express: {
-      enabled: true,
-      path: "@opentelemetry/plugin-express",
+if (
+  process.env.TRACING_ENABLED === "true" ||
+  process.env.TRACING_ENABLED === "1"
+) {
+  const provider = new NodeTracerProvider({
+    plugins: {
+      express: {
+        enabled: true,
+        path: "@opentelemetry/plugin-express",
+      },
+      http: {
+        path: "@opentelemetry/plugin-http",
+        ignoreIncomingPaths: [/^\/(live|ready|health)/],
+      },
     },
-    http: {
-      path: "@opentelemetry/plugin-http",
-      ignoreIncomingPaths: [/^\/(live|ready|health)/],
-    },
-  },
-  propagator: new JaegerHttpTracePropagator(),
-});
-const exporter = new JaegerExporter({
-  serviceName:
-    process.env.JAEGER_SERVICE_NAME ||
-    process.env.OTEL_SERVICE_NAME ||
-    "loinc-converter",
-});
-provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-provider.register();
+    propagator: new JaegerHttpTracePropagator(),
+  });
+  const exporter = new JaegerExporter({
+    serviceName:
+      process.env.JAEGER_SERVICE_NAME ||
+      process.env.OTEL_SERVICE_NAME ||
+      "loinc-converter",
+  });
+  provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+  provider.register();
+}
 
 const express = require("express");
 
