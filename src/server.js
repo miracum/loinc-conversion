@@ -45,7 +45,7 @@ const express = require("express");
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-if (process.env.LOG_REQUESTS) {
+if (process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1") {
   app.use(pino);
 }
 
