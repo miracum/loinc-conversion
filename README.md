@@ -82,12 +82,12 @@ content-type: application/json
 
 ## Configuration
 
-| Environment variable | Description                                          | Default           |
-| -------------------- | ---------------------------------------------------- | ----------------- |
-| TRACING_ENABLED      | Whether to enable distributed tracing via Jaeger     | `false`           |
-| JAEGER_SERVICE_NAME  | Name for this service. Used for tracing.             | `loinc-converter` |
-| LOG_REQUESTS         | Whether all API requests should be logged to stdout. | `false`           |
-| PORT                 | The port to bind the web server to.                  | `8080`            |
+| Environment variable | Description                                                                                                               | Default           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| ~~TRACING_ENABLED~~  | Whether to enable distributed tracing via Jaeger. Currently unavailable due to incompatibility with latest OpenTelemetry. | `false`           |
+| JAEGER_SERVICE_NAME  | Name for this service. Used for tracing.                                                                                  | `loinc-converter` |
+| LOG_REQUESTS         | Whether all API requests should be logged to stdout.                                                                      | `false`           |
+| PORT                 | The port to bind the web server to.                                                                                       | `8080`            |
 
 ## Development
 
@@ -112,3 +112,21 @@ npm run tests:e2e
 ```
 
 This expects the app to run on <http://localhost:8080>. You can specify a different endpoint by setting the `API_ENDPOINT` env var.
+
+## Benchmark
+
+```sh
+# Processor Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz, 4001 Mhz, 4 Core(s), 8 Logical Processor(s)
+# 32 GB DDR4 RAM @ 3600 MHz
+$ bombardier -d 30s "http://localhost:8080/api/v1/conversions?loinc=718-7&unit=g%2FdL&value=10"
+Bombarding http://localhost:8080/api/v1/conversions?loinc=718-7&unit=g%2FdL&value=10 for 30s using 500 connection(s)
+[=================================================================================================================] 30s
+Done!
+Statistics        Avg      Stdev        Max
+  Reqs/sec     15883.46    1672.96   52707.38
+  Latency       31.51ms    45.90ms      2.76s
+  HTTP codes:
+    1xx - 0, 2xx - 476294, 3xx - 0, 4xx - 0, 5xx - 0
+    others - 0
+  Throughput:     5.61MB/s
+```

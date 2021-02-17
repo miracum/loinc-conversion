@@ -14,7 +14,7 @@ COPY tests/e2e tests/e2e
 
 USER 11111
 EXPOSE 8080
-HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/health || exit 1
+HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/live || exit 1
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
 ENTRYPOINT [ "npm" ]

@@ -4,55 +4,11 @@ const parse = require("csv-parse/lib/sync");
 const ucum = require("@lhncbc/ucum-lhc");
 const HttpStatus = require("http-status-codes");
 const log = require("pino")();
-const pino = require("pino-http")();
-const health = require("@cloudnative/health-connect");
-const { NodeTracerProvider } = require("@opentelemetry/node");
-const { BatchSpanProcessor } = require("@opentelemetry/tracing");
-const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
-const {
-  JaegerHttpTracePropagator,
-} = require("@opentelemetry/propagator-jaeger");
 
-if (
-  process.env.TRACING_ENABLED === "true" ||
-  process.env.TRACING_ENABLED === "1"
-) {
-  const provider = new NodeTracerProvider({
-    plugins: {
-      express: {
-        enabled: true,
-        path: "@opentelemetry/plugin-express",
-      },
-      http: {
-        path: "@opentelemetry/plugin-http",
-        ignoreIncomingPaths: [/^\/(live|ready|health)/],
-      },
-    },
-    propagator: new JaegerHttpTracePropagator(),
-  });
-  const exporter = new JaegerExporter({
-    serviceName:
-      process.env.JAEGER_SERVICE_NAME ||
-      process.env.OTEL_SERVICE_NAME ||
-      "loinc-converter",
-  });
-  provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-  provider.register();
-}
-
-const express = require("express");
-
-const app = express();
-app.use(express.json({ limit: "10mb" }));
-
-if (process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1") {
-  app.use(pino);
-}
-
-const healthcheck = new health.HealthChecker();
-app.use("/live", health.LivenessEndpoint(healthcheck));
-app.use("/ready", health.ReadinessEndpoint(healthcheck));
-app.use("/health", health.HealthEndpoint(healthcheck));
+const app = require("fastify")({
+  logger:
+    process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
+});
 
 const arbUnits = {};
 const loincUnits = {};
@@ -235,6 +191,23 @@ function convert(loinc, unit, value = 1.0) {
   };
 }
 
+// Readiness and liveness probes. Used by Docker healthchecks and Kubernetes probes
+app.route({
+  method: ["GET", "HEAD"],
+  url: "/ready",
+  handler: async (_request, reply) => {
+    reply.send("OK");
+  },
+});
+
+app.route({
+  method: ["GET", "HEAD"],
+  url: "/live",
+  handler: async (_request, reply) => {
+    reply.send("OK");
+  },
+});
+
 app.get("/api/v1/conversions", async (req, resp) => {
   const { loinc, unit, value } = req.query;
 
@@ -251,19 +224,7 @@ app.get("/api/v1/conversions", async (req, resp) => {
   return resp.status(status).send(result);
 });
 
-/*
- REST server
- endpoint: "POST /conversions"
- content-type: application/json
- body: [
-	{
-		"loinc": "str, e.g. 718-7",
-		"unit": "UCUM unit, e.g. g/dL",
-		"value": float, optional(=1.0)
-	}+
- ]
-*/
-app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
+const postHandler = async (request, response) => {
   let result = [];
 
   let requestBody = request.body;
@@ -309,10 +270,31 @@ app.post(["/conversions", "/api/v1/conversions"], async (request, response) => {
   }
 
   return response.status(status).send(result);
-});
+};
+
+/*
+ REST server
+ endpoint: "POST /conversions"
+ content-type: application/json
+ body: [
+	{
+		"loinc": "str, e.g. 718-7",
+		"unit": "UCUM unit, e.g. g/dL",
+		"value": float, optional(=1.0)
+	}+
+ ]
+*/
+app.post("/conversions", postHandler);
+app.post("/api/v1/conversions", postHandler);
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
-  log.info(`Server listening on port ${port}...`);
-});
+const start = async () => {
+  try {
+    await app.listen(port, "0.0.0.0");
+  } catch (err) {
+    app.log.error(err);
+    process.exit(1);
+  }
+};
+start();

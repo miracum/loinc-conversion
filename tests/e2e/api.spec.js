@@ -9,7 +9,7 @@ const { expect } = chai;
 const endpoint = process.env.API_ENDPOINT || "http://localhost:8080";
 
 const opts = {
-  resources: [`${endpoint}/health`],
+  resources: [`${endpoint}/ready`],
   delay: 1000, // initial delay in ms
   interval: 250, // poll interval in ms
   timeout: 30000, // timeout in ms
@@ -26,6 +26,7 @@ beforeEach((done) => {
       done();
     })
     .catch((err) => {
+      console.log(err);
       throw err;
     });
   api = chai.request(endpoint).post("/api/v1/conversions");
