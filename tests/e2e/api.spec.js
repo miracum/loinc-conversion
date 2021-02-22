@@ -107,11 +107,11 @@ describe("UCUM Unit Conversion", () => {
 
   it("fails if given an inconvertible unit as part of the custom conversion table", (done) => {
     api
-      .send({ loinc: "14854-4", value: 12, unit: "W/24.h" })
+      .send({ loinc: "14854-4", value: 12, unit: "W/(24.h)" })
       .then((response) => {
         expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
         expect(response.body.error).to.contain(
-          "(W/24).h cannot be converted to (nmol/24).h."
+          "W/(24.h) cannot be converted to nmol/(24.h)."
         );
         done();
       });
@@ -147,6 +147,15 @@ describe("LOINC Harmonization", () => {
       "mL/min/{1.73_m2}",
       "Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula (CKD-EPI)",
     ],
+    [
+      "14854-4",
+      1,
+      "nmol/(24.h)",
+      "2668-2",
+      0.1692,
+      "ug/(24.h)",
+      "Norepinephrine [Mass/time] in 24 hour Urine",
+    ]
   ])(
     "converts %s (%d %s) to %s (%d %s) with display '%s'",
     (
