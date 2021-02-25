@@ -4,10 +4,29 @@ const parse = require("csv-parse/lib/sync");
 const ucum = require("@lhncbc/ucum-lhc");
 const HttpStatus = require("http-status-codes");
 const log = require("pino")();
+const metricsPlugin = require("fastify-metrics");
 
 const app = require("fastify")({
   logger:
     process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
+});
+
+app.register(metricsPlugin, {
+  endpoint: "/metrics",
+  metrics: {
+    histogram: {
+      name: "http_request_duration_seconds",
+      help: "request duration in seconds",
+      labelNames: ["status_code", "method", "route"],
+      buckets: [0.01, 0.025, 0.05, 0.1, 0.5, 1],
+    },
+    summary: {
+      name: "http_request_summary_seconds",
+      help: "request duration in seconds summary",
+      labelNames: ["status_code", "method", "route"],
+      percentiles: [0.5, 0.9, 0.95, 0.99],
+    },
+  },
 });
 
 const arbUnits = {};
