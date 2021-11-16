@@ -116,6 +116,36 @@ describe("UCUM Unit Conversion", () => {
         done();
       });
   });
+
+  it("returns original unit and warning if given loinc without example unit and ucum code", (done) => {
+    api
+      .send({ loinc: "10346-5", value: 2000, unit: "/ml", id: 1 })
+      .then((response) => {
+        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+        expect(response.body.unit).to.equal("/ml");
+        expect(response.body.value).to.equal(2000);
+        expect(response.body).to.have.property("warning");
+        expect(response.body.warning).to.contain(
+          "No UCUM unit given for LOINC Code 10346-5, will return /ml"
+        );
+        done();
+      });
+  });
+
+  it("returns ucum unit and warning if given loinc without example unit and non-ucum code", (done) => {
+    api
+      .send({ loinc: "10346-5", value: 2000, unit: "micromol/L", id: 1 })
+      .then((response) => {
+        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+        expect(response.body.unit).to.equal("umol/L");
+        expect(response.body.value).to.equal(2000);
+        expect(response.body).to.have.property("warning");
+        expect(response.body.warning).to.contain(
+          "No UCUM unit given for LOINC Code 10346-5, will return umol/L"
+        );
+        done();
+      });
+  });
 });
 
 describe("LOINC Harmonization", () => {
@@ -155,7 +185,7 @@ describe("LOINC Harmonization", () => {
       0.1692,
       "ug/(24.h)",
       "Norepinephrine [Mass/time] in 24 hour Urine",
-    ]
+    ],
   ])(
     "converts %s (%d %s) to %s (%d %s) with display '%s'",
     (

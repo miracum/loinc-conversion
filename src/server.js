@@ -8,7 +8,7 @@ const metricsPlugin = require("fastify-metrics");
 
 const app = require("fastify")({
   logger:
-    process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
+      process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
 });
 
 app.register(metricsPlugin, {
@@ -87,10 +87,10 @@ try {
   }
 } catch (e) {
   log.error(
-    `Could not load 'loinc.csv': ${e}. ` +
+      `Could not load 'loinc.csv': ${e}. ` +
       "Did you download the official 'LOINC Table File (CSV)'" +
       "from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?",
-    e
+      e
   );
   process.exit(1);
 }
@@ -147,7 +147,7 @@ function convert(loinc, unit, value = 1.0) {
 
   // Check if input LOINC exists:
   if (!(loinc in loincUnits)) {
-    throw new Error(`Invalid LOINC: ${loinc}`, { loinc });
+    throw new Error(`Invalid LOINC: ${loinc}`, {loinc});
   }
 
   // Convert input unit if UCUM synonym exists:
@@ -157,7 +157,7 @@ function convert(loinc, unit, value = 1.0) {
 
   // Check if input UCUM unit exists:
   if (utils.validateUnitString(unit).status !== "valid") {
-    throw new Error(`Invalid UCUM unit: ${unit}`, { unit });
+    throw new Error(`Invalid UCUM unit: ${unit}`, {unit});
   }
 
   // if the input LOINC is part of the "LOINC-to-LOINC" conversion table
@@ -169,8 +169,8 @@ function convert(loinc, unit, value = 1.0) {
     const result = utils.convertUnitTo(unit, value, toUnitCode);
     if (result.status !== "succeeded") {
       throw new Error(
-        `Failed to convert ${unit} to ${toUnitCode} via the custom conversion table: ${result.msg}`,
-        { unit, toUnitCode }
+          `Failed to convert ${unit} to ${toUnitCode} via the custom conversion table: ${result.msg}`,
+          {unit, toUnitCode}
       );
     }
     value = result.toVal;
@@ -186,28 +186,42 @@ function convert(loinc, unit, value = 1.0) {
   // Convert using UCUM lib:
   // HACK: arbitrary Unit IU cannot be converted, replace w/ {arbitrary:IU}:
   const targetUnit = loincUnits[loinc].exampleUcumUnits;
-  const conversion = utils.convertUnitTo(
-    unit.replace("[IU]", "{arbitrary:IU}"),
-    value,
-    targetUnit.replace("[IU]", "{arbitrary:IU}")
-  );
 
-  if (conversion.status !== "succeeded") {
-    throw new Error(
-      `Cannot convert ${unit} to ${targetUnit}: ${conversion.msg}`,
-      {
-        unit,
-        targetUnit,
-      }
+  if (targetUnit) {
+
+    const conversion = utils.convertUnitTo(
+        unit.replace("[IU]", "{arbitrary:IU}"),
+        value,
+        targetUnit.replace("[IU]", "{arbitrary:IU}")
     );
-  }
 
-  return {
-    value: conversion.toVal,
-    unit: targetUnit.replace("{arbitrary:IU}", "[IU]"),
-    loinc,
-    display: loincUnits[loinc].display,
-  };
+    if (conversion.status !== "succeeded") {
+      throw new Error(
+          `Cannot convert ${unit} to ${targetUnit}: ${conversion.msg}`,
+          {
+            unit,
+            targetUnit,
+          }
+      );
+    }
+    return {
+      value: conversion.toVal,
+      unit: targetUnit.replace("{arbitrary:IU}", "[IU]"),
+      loinc,
+      display: loincUnits[loinc].display,
+    };
+
+  } else {
+
+    return {
+      value,
+      unit,
+      loinc,
+      display: loincUnits[loinc].display,
+      warning: `No UCUM unit given for LOINC Code ${loinc}, will return ${unit}`,
+    };
+
+  }
 }
 
 // Readiness and liveness probes. Used by Docker healthchecks and Kubernetes probes
@@ -228,7 +242,7 @@ app.route({
 });
 
 app.get("/api/v1/conversions", async (req, resp) => {
-  const { loinc, unit, value } = req.query;
+  const {loinc, unit, value} = req.query;
 
   let result = {};
   let status = HttpStatus.StatusCodes.OK;
@@ -249,12 +263,12 @@ const postHandler = async (request, response) => {
   let requestBody = request.body;
 
   if (
-    Object.entries(requestBody).length === 0 &&
-    requestBody.constructor === Object
+      Object.entries(requestBody).length === 0 &&
+      requestBody.constructor === Object
   ) {
     return response
-      .status(HttpStatus.StatusCodes.BAD_REQUEST)
-      .send({ error: "Empty request body." });
+    .status(HttpStatus.StatusCodes.BAD_REQUEST)
+    .send({error: "Empty request body."});
   }
 
   if (!Array.isArray(request.body)) {
