@@ -8,7 +8,7 @@ include:
 e2e:
   stage: test
   image:
-    name: docker/compose:1.28.4
+    name: docker/compose:1.29.2
     entrypoint: [""]
   extends:
     - .job_defaults
