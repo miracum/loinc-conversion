@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 const fs = require("fs");
-const parse = require("csv-parse/lib/sync");
+const {parse} = require('csv-parse/sync');
 const ucum = require("@lhncbc/ucum-lhc");
 const HttpStatus = require("http-status-codes");
 const log = require("pino")();

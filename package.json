@@ -5,11 +5,11 @@
   "main": "src/server.js",
   "dependencies": {
     "@lhncbc/ucum-lhc": "4.1.4",
-    "csv-parse": "4.16.3",
+    "csv-parse": "5.0.3 ",
     "fastify": "3.24.0",
     "fastify-metrics": "8.0.0",
     "http-status-codes": "2.1.4",
-    "pino": "7.4.0"
+    "pino": "7.4.1"
   },
   "devDependencies": {
     "@commitlint/cli": "15.0.0",
@@ -23,12 +23,12 @@
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-jsx-a11y": "6.5.1",
     "eslint-plugin-prettier": "4.0.0",
-    "eslint-plugin-react": "7.27.0",
+    "eslint-plugin-react": "7.27.1",
     "eslint-plugin-react-hooks": "4.3.0",
     "grunt": "1.4.1",
     "husky": "7.0.4",
     "jest": "27.3.1",
-    "prettier": "2.4.1",
+    "prettier": "2.5.0",
     "wait-on": "6.0.0"
   },
   "scripts": {
