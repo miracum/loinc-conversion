@@ -80,7 +80,7 @@ try {
       }
     } else {
       loincUnits[entry.LOINC_NUM] = {
-        exampleUcumUnits: entry.EXAMPLE_UCUM_UNITS,
+        exampleUcumUnits: entry.EXAMPLE_UCUM_UNITS.split(";")[0],
         display: entry.LONG_COMMON_NAME,
       };
     }

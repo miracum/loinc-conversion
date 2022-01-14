@@ -186,6 +186,15 @@ describe("LOINC Harmonization", () => {
       "ug/(24.h)",
       "Norepinephrine [Mass/time] in 24 hour Urine",
     ],
+    [
+      "8329-5",
+      37,
+      "Cel",
+      "8329-5",
+      98.59999999999997,
+      "[degF]",
+      "Body temperature - Core",
+    ],
   ])(
     "converts %s (%d %s) to %s (%d %s) with display '%s'",
     (
