@@ -130,3 +130,6 @@ Statistics        Avg      Stdev        Max
     others - 0
   Throughput:     5.61MB/s
 ```
+
+## Legal
+This material contains content from LOINC (http://loinc.org). LOINC is copyright © 1995-2021, Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at http://loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.
