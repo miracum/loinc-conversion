@@ -30,7 +30,7 @@ beforeEach((done) => {
       throw err;
     });
   api = chai.request(endpoint).post("/api/v1/conversions");
-});
+}, 20000);
 
 describe("API Endpoint", () => {
   it("accepts a single request item as body", (done) => {
