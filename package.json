@@ -6,7 +6,7 @@
   "dependencies": {
     "@lhncbc/ucum-lhc": "4.1.4",
     "csv-parse": "5.0.4",
-    "fastify": "3.27.4",
+    "fastify": "3.29.4",
     "fastify-metrics": "8.0.0",
     "http-status-codes": "2.2.0",
     "pino": "7.9.2"
