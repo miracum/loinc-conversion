@@ -30,7 +30,7 @@
     "jest": "27.5.1",
     "prettier": "2.8.1",
     "wait-on": "6.0.1",
-    "minimist": "1.2.7"
+    "minimist": "1.2.6"
   },
   "scripts": {
     "tests:e2e": "jest tests/e2e",
