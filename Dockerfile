@@ -6,7 +6,6 @@ COPY data data
 COPY package*.json ./
 RUN npm ci --no-optional && mkdir /.npm && chown -R 11111:0 /.npm
 
-
 COPY src src
 # while generally considered a bad practice, in this case the small size
 # of the test data makes it acceptable to copy them to the production image.
