@@ -136,6 +136,13 @@ try {
 // Create UCUM conversion singleton:
 const utils = ucum.UcumLhcUtils.getInstance();
 
+function round(value) {
+  integerPartLength = Math.trunc(value).toString().length;
+  // weird behaviour of used toFixed function with large number of digits
+  // it still rounds correctly but to smaller number of digits than anticipated
+  return Number(value.toFixed(10-integerPartLength));
+}
+
 function convert(loinc, unit, value = 1.0) {
   if (!loinc) {
     throw new Error("LOINC code is required");
@@ -205,7 +212,7 @@ function convert(loinc, unit, value = 1.0) {
       );
     }
     return {
-      value: conversion.toVal,
+      value: round(conversion.toVal),
       unit: targetUnit.replace("{arbitrary:IU}", "[IU]"),
       loinc,
       display: loincUnits[loinc].display,
@@ -214,7 +221,7 @@ function convert(loinc, unit, value = 1.0) {
   } else {
 
     return {
-      value,
+      value : round(value),
       unit,
       loinc,
       display: loincUnits[loinc].display,

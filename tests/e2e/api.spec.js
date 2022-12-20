@@ -191,7 +191,18 @@ describe("LOINC Harmonization", () => {
       37,
       "Cel",
       "8329-5",
-      98.59999999999997,
+      98.6,
+      "[degF]",
+      "Body temperature - Core",
+    ],
+    [
+      "8329-5",
+      37.291234453432252849,
+      "Cel",
+      "8329-5",
+      // weird behaviour of used toFixed function with large number of digits
+      // it still rounds correctly but to smaller number of digits than anticipated
+      99.12422202,
       "[degF]",
       "Body temperature - Core",
     ],
