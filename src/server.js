@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 const fs = require("fs");
-const {parse} = require('csv-parse/sync');
+const { parse } = require("csv-parse/sync");
 const ucum = require("@lhncbc/ucum-lhc");
 const HttpStatus = require("http-status-codes");
 const log = require("pino")();
@@ -8,8 +8,10 @@ const metricsPlugin = require("fastify-metrics");
 
 const app = require("fastify")({
   logger:
-      process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
+    process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
 });
+
+app.register(require("fastify-graceful-shutdown"));
 
 app.register(metricsPlugin, {
   endpoint: "/metrics",
@@ -27,6 +29,12 @@ app.register(metricsPlugin, {
       percentiles: [0.5, 0.9, 0.95, 0.99],
     },
   },
+});
+
+app.after(() => {
+  app.gracefulShutdown((_signal, next) => {
+    next();
+  });
 });
 
 const arbUnits = {};
@@ -87,10 +95,10 @@ try {
   }
 } catch (e) {
   log.error(
-      `Could not load 'loinc.csv': ${e}. ` +
+    `Could not load 'loinc.csv': ${e}. ` +
       "Did you download the official 'LOINC Table File (CSV)'" +
       "from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?",
-      e
+    e
   );
   process.exit(1);
 }
@@ -137,10 +145,10 @@ try {
 const utils = ucum.UcumLhcUtils.getInstance();
 
 function round(value) {
-  integerPartLength = Math.trunc(value).toString().length;
+  const integerPartLength = Math.trunc(value).toString().length;
   // weird behaviour of used toFixed function with large number of digits
   // it still rounds correctly but to smaller number of digits than anticipated
-  return Number(value.toFixed(10-integerPartLength));
+  return Number(value.toFixed(10 - integerPartLength));
 }
 
 function convert(loinc, unit, value = 1.0) {
@@ -154,7 +162,7 @@ function convert(loinc, unit, value = 1.0) {
 
   // Check if input LOINC exists:
   if (!(loinc in loincUnits)) {
-    throw new Error(`Invalid LOINC: ${loinc}`, {loinc});
+    throw new Error(`Invalid LOINC: ${loinc}`, { loinc });
   }
 
   // Convert input unit if UCUM synonym exists:
@@ -164,7 +172,7 @@ function convert(loinc, unit, value = 1.0) {
 
   // Check if input UCUM unit exists:
   if (utils.validateUnitString(unit).status !== "valid") {
-    throw new Error(`Invalid UCUM unit: ${unit}`, {unit});
+    throw new Error(`Invalid UCUM unit: ${unit}`, { unit });
   }
 
   // if the input LOINC is part of the "LOINC-to-LOINC" conversion table
@@ -176,8 +184,8 @@ function convert(loinc, unit, value = 1.0) {
     const result = utils.convertUnitTo(unit, value, toUnitCode);
     if (result.status !== "succeeded") {
       throw new Error(
-          `Failed to convert ${unit} to ${toUnitCode} via the custom conversion table: ${result.msg}`,
-          {unit, toUnitCode}
+        `Failed to convert ${unit} to ${toUnitCode} via the custom conversion table: ${result.msg}`,
+        { unit, toUnitCode }
       );
     }
     value = result.toVal;
@@ -195,20 +203,19 @@ function convert(loinc, unit, value = 1.0) {
   const targetUnit = loincUnits[loinc].exampleUcumUnits;
 
   if (targetUnit) {
-
     const conversion = utils.convertUnitTo(
-        unit.replace("[IU]", "{arbitrary:IU}"),
-        value,
-        targetUnit.replace("[IU]", "{arbitrary:IU}")
+      unit.replace("[IU]", "{arbitrary:IU}"),
+      value,
+      targetUnit.replace("[IU]", "{arbitrary:IU}")
     );
 
     if (conversion.status !== "succeeded") {
       throw new Error(
-          `Cannot convert ${unit} to ${targetUnit}: ${conversion.msg}`,
-          {
-            unit,
-            targetUnit,
-          }
+        `Cannot convert ${unit} to ${targetUnit}: ${conversion.msg}`,
+        {
+          unit,
+          targetUnit,
+        }
       );
     }
     return {
@@ -217,17 +224,14 @@ function convert(loinc, unit, value = 1.0) {
       loinc,
       display: loincUnits[loinc].display,
     };
-
   } else {
-
     return {
-      value : round(value),
+      value: round(value),
       unit,
       loinc,
       display: loincUnits[loinc].display,
       warning: `No UCUM unit given for LOINC Code ${loinc}, will return ${unit}`,
     };
-
   }
 }
 
@@ -249,7 +253,7 @@ app.route({
 });
 
 app.get("/api/v1/conversions", async (req, resp) => {
-  const {loinc, unit, value} = req.query;
+  const { loinc, unit, value } = req.query;
 
   let result = {};
   let status = HttpStatus.StatusCodes.OK;
@@ -270,12 +274,12 @@ const postHandler = async (request, response) => {
   let requestBody = request.body;
 
   if (
-      Object.entries(requestBody).length === 0 &&
-      requestBody.constructor === Object
+    Object.entries(requestBody).length === 0 &&
+    requestBody.constructor === Object
   ) {
     return response
-    .status(HttpStatus.StatusCodes.BAD_REQUEST)
-    .send({error: "Empty request body."});
+      .status(HttpStatus.StatusCodes.BAD_REQUEST)
+      .send({ error: "Empty request body." });
   }
 
   if (!Array.isArray(request.body)) {
@@ -331,7 +335,7 @@ const port = process.env.PORT || 8080;
 
 const start = async () => {
   try {
-    await app.listen({ port: port, host: '0.0.0.0' });
+    app.listen({ port: port, host: "0.0.0.0" });
   } catch (err) {
     app.log.error(err);
     process.exit(1);
