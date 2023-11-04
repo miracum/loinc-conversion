@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM docker.io/library/node:20.0.0-alpine@sha256:2ffec31a58e85fbcd575c544a3584f6f4d128779e6b856153a04366b8dd01bb0
+FROM docker.io/library/node:20.9.0-alpine@sha256:8e015de364a2eb2ed7c52a558e9f716dcb615560ffd132234087c10ccc1f2c63
 WORKDIR /opt/loinc-conversion
 EXPOSE 8080/tcp
 HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/live || exit 1
