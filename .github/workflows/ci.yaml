@@ -1,0 +1,99 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  release:
+    types: [created]
+  pull_request:
+    branches: [master]
+
+permissions: read-all
+
+jobs:
+  build:
+    uses: miracum/.github/.github/workflows/standard-build.yaml@f9cb1a43a5ceb1102ceb327895939f79d1431d7c # v1.3.1
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+      pull-requests: write
+      actions: read
+      security-events: write
+    with:
+      enable-build-test-layer: true
+      enable-upload-test-image: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  lint:
+    uses: miracum/.github/.github/workflows/standard-lint.yaml@f9cb1a43a5ceb1102ceb327895939f79d1431d7c # v1.3.1
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      security-events: write
+      actions: read
+    with:
+      enable-validate-gradle-wrapper: false
+      codeql-languages: '["javascript"]'
+      enable-codeql: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    runs-on: ubuntu-22.04
+    needs:
+      - build
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+
+      - name: Download build image
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          name: container-image
+          path: /tmp
+
+      - name: Download test image
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          name: test-image
+          path: /tmp
+
+      - name: Load image
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          ls -lsa /tmp
+          docker load --input /tmp/image.tar
+          docker load --input /tmp/image-test.tar
+          docker image ls
+
+      - name: Run E2E tests
+        env:
+          IMAGE_TAG: "${{ needs.build.outputs.image-version }}"
+        run: |
+          docker compose -f tests/e2e/compose.yaml up --abort-on-container-exit
+          docker compose -f tests/e2e/compose.yaml down --remove-orphans
+
+      - name: Print E2E logs
+        env:
+          IMAGE_TAG: "${{ needs.build.outputs.image-version }}"
+        if: ${{ always() }}
+        run: |
+          docker compose -f tests/e2e/compose.yaml logs
+
+  release:
+    uses: miracum/.github/.github/workflows/standard-release.yaml@f9cb1a43a5ceb1102ceb327895939f79d1431d7c # v1.3.1
+    needs:
+      - build
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    secrets:
+      semantic-release-token: ${{ secrets.MIRACUM_BOT_SEMANTIC_RELEASE_TOKEN }}

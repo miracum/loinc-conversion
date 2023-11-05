@@ -82,12 +82,10 @@ content-type: application/json
 
 ## Configuration
 
-| Environment variable | Description                                                                                                               | Default           |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------- |
-| ~~TRACING_ENABLED~~  | Whether to enable distributed tracing via Jaeger. Currently unavailable due to incompatibility with latest OpenTelemetry. | `false`           |
-| JAEGER_SERVICE_NAME  | Name for this service. Used for tracing.                                                                                  | `loinc-converter` |
-| LOG_REQUESTS         | Whether all API requests should be logged to stdout.                                                                      | `false`           |
-| PORT                 | The port to bind the web server to.                                                                                       | `8080`            |
+| Environment variable | Description                                          | Default |
+| -------------------- | ---------------------------------------------------- | ------- |
+| LOG_REQUESTS         | Whether all API requests should be logged to stdout. | `false` |
+| PORT                 | The port to bind the web server to.                  | `8080`  |
 
 ## Development
 

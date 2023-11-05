@@ -1,43 +1,30 @@
 # syntax=docker/dockerfile:1.4
-FROM docker.io/library/node:20.0.0-alpine@sha256:2ffec31a58e85fbcd575c544a3584f6f4d128779e6b856153a04366b8dd01bb0
+FROM docker.io/library/node:20.9.0-slim@sha256:da981564279232f7962576d79d01832cc12f8270e8ddd05bb3077af8061a50ca AS build
 WORKDIR /opt/loinc-conversion
-EXPOSE 8080/tcp
-HEALTHCHECK CMD wget --quiet --spider http://localhost:8080/live || exit 1
 ENV NODE_ENV=production \
-    NO_UPDATE_NOTIFIER=true \
-    NPM_CONFIG_CACHE=/opt/loinc-conversion/.npm
-
-# this is only needed because the e2e-test runs using NPM
-# to avoid the misleading error:
-# `Your cache folder contains root-owned files, due to a bug in
-#  previous versions of npm which has since been addressed.`
-RUN chown -R 65534:65534 .
-USER 65534:65534
+    NO_UPDATE_NOTIFIER=true
 
 COPY data data
 
 COPY package*.json ./
 RUN <<EOF
-npm clean-install --omit=optional
+npm clean-install --omit=dev
 npm cache clean --force
 EOF
 
 COPY src src
-# while generally considered a bad practice, in this case the small size
-# of the test data makes it acceptable to copy them to the production image.
-# at least for now...
+
+FROM build AS test
+ENV NODE_ENV=development
+RUN npm clean-install
 COPY tests/e2e tests/e2e
 
-CMD [ "src/server.js" ]
+FROM gcr.io/distroless/nodejs20-debian12:nonroot@sha256:5478cbb8b444062e48745de199a1b2607dc9a46669f353e1af25e44a2df92cf6
+WORKDIR /opt/loinc-conversion
+EXPOSE 8080/tcp
+ENV NODE_ENV=production \
+    NO_UPDATE_NOTIFIER=true
+USER 65532:65532
 
-ARG VERSION=0.0.0
-ARG GIT_REF=""
-ARG BUILD_TIME=""
-LABEL org.opencontainers.image.created=${BUILD_TIME} \
-    org.opencontainers.image.authors="miracum.org" \
-    org.opencontainers.image.source="https://gitlab.miracum.org/miracum/etl/loinc-conversion" \
-    org.opencontainers.image.version=${VERSION} \
-    org.opencontainers.image.revision=${GIT_REF} \
-    org.opencontainers.image.vendor="miracum.org" \
-    org.opencontainers.image.title="loinc-conversion" \
-    org.opencontainers.image.description="Convert LOINC codes and UCUM units to a standard representation."
+COPY --from=build /opt/loinc-conversion .
+CMD [ "src/server.js" ]
