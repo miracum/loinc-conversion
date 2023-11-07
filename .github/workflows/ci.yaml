@@ -45,8 +45,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs:
       - build
-    permissions:
-      packages: read
     steps:
       - name: "Checkout code"
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -60,18 +58,24 @@ jobs:
           name: container-image
           path: /tmp
 
-      - name: Download test image
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          name: test-image
-          path: /tmp
-
       - name: Load image
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           ls -lsa /tmp
           docker load --input /tmp/image.tar
+          docker image ls
+
+      # the test image is always downloaded whether its a PR or not. Only the "actual" image is pushed to
+      # the container registry on non-PRs.
+      - name: Download test image
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        with:
+          name: test-image
+          path: /tmp
+
+      - name: Load test image
+        run: |
+          ls -lsa /tmp
           docker load --input /tmp/image-test.tar
           docker image ls
 
@@ -93,6 +97,7 @@ jobs:
     uses: miracum/.github/.github/workflows/standard-release.yaml@f9cb1a43a5ceb1102ceb327895939f79d1431d7c # v1.3.1
     needs:
       - build
+      - test
     permissions:
       contents: write
       pull-requests: write
