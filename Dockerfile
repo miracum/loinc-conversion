@@ -19,7 +19,7 @@ ENV NODE_ENV=development
 RUN npm clean-install
 COPY tests/e2e tests/e2e
 
-FROM gcr.io/distroless/nodejs20-debian12:nonroot@sha256:5478cbb8b444062e48745de199a1b2607dc9a46669f353e1af25e44a2df92cf6
+FROM gcr.io/distroless/nodejs20-debian12:nonroot@sha256:015be521134f97b5f2b4c1543615eb4be907fadc8c6a52e60fd0c18f7cda0337
 WORKDIR /opt/loinc-conversion
 EXPOSE 8080/tcp
 ENV NODE_ENV=production \
