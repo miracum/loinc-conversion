@@ -12,7 +12,7 @@ permissions: read-all
 
 jobs:
   build:
-    uses: miracum/.github/.github/workflows/standard-build.yaml@f9cb1a43a5ceb1102ceb327895939f79d1431d7c # v1.3.1
+    uses: miracum/.github/.github/workflows/standard-build.yaml@dfe3f6a2abf0df754c2f11324a667503e7913bb8 # v1.5.2
     permissions:
       contents: read
       id-token: write
@@ -27,7 +27,7 @@ jobs:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: miracum/.github/.github/workflows/standard-lint.yaml@f9cb1a43a5ceb1102ceb327895939f79d1431d7c # v1.3.1
+    uses: miracum/.github/.github/workflows/standard-lint.yaml@dfe3f6a2abf0df754c2f11324a667503e7913bb8 # v1.5.2
     permissions:
       contents: read
       pull-requests: write
@@ -94,7 +94,7 @@ jobs:
           docker compose -f tests/e2e/compose.yaml logs
 
   release:
-    uses: miracum/.github/.github/workflows/standard-release.yaml@f9cb1a43a5ceb1102ceb327895939f79d1431d7c # v1.3.1
+    uses: miracum/.github/.github/workflows/standard-release.yaml@dfe3f6a2abf0df754c2f11324a667503e7913bb8 # v1.5.2
     needs:
       - build
       - test
