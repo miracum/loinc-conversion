@@ -12,7 +12,7 @@ permissions: read-all
 
 jobs:
   build:
-    uses: miracum/.github/.github/workflows/standard-build.yaml@402d475fc7f49888381ea1090ddc2004ac8a8e59 # v1.5.3
+    uses: miracum/.github/.github/workflows/standard-build.yaml@99ea726a6aea9d5e055cadc81cd46527ea6c8d83 # v1.5.4
     permissions:
       contents: read
       id-token: write
@@ -27,7 +27,7 @@ jobs:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: miracum/.github/.github/workflows/standard-lint.yaml@402d475fc7f49888381ea1090ddc2004ac8a8e59 # v1.5.3
+    uses: miracum/.github/.github/workflows/standard-lint.yaml@99ea726a6aea9d5e055cadc81cd46527ea6c8d83 # v1.5.4
     permissions:
       contents: read
       pull-requests: write
@@ -52,10 +52,10 @@ jobs:
           persist-credentials: false
 
       - name: Download build image
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          name: container-image
+          name: ${{ needs.build.outputs.image-slug }}
           path: /tmp
 
       - name: Load image
@@ -68,9 +68,9 @@ jobs:
       # the test image is always downloaded whether its a PR or not. Only the "actual" image is pushed to
       # the container registry on non-PRs.
       - name: Download test image
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
-          name: test-image
+          name: ${{ needs.build.outputs.image-slug }}-test
           path: /tmp
 
       - name: Load test image
@@ -94,7 +94,7 @@ jobs:
           docker compose -f tests/e2e/compose.yaml logs
 
   release:
-    uses: miracum/.github/.github/workflows/standard-release.yaml@402d475fc7f49888381ea1090ddc2004ac8a8e59 # v1.5.3
+    uses: miracum/.github/.github/workflows/standard-release.yaml@99ea726a6aea9d5e055cadc81cd46527ea6c8d83 # v1.5.4
     needs:
       - build
       - test
