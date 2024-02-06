@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
 
       - name: Download build image
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: ${{ needs.build.outputs.image-slug }}
@@ -68,7 +68,7 @@ jobs:
       # the test image is always downloaded whether its a PR or not. Only the "actual" image is pushed to
       # the container registry on non-PRs.
       - name: Download test image
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
           name: ${{ needs.build.outputs.image-slug }}-test
           path: /tmp
