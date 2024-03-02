@@ -12,7 +12,7 @@ permissions: read-all
 
 jobs:
   build:
-    uses: miracum/.github/.github/workflows/standard-build.yaml@d09a237ae62959d3cf89d526a035fbd9d9d816ee # v1.5.8
+    uses: miracum/.github/.github/workflows/standard-build.yaml@0acca4e2cf641d828c9514dce0ff70511b448cc2 # v1.5.9
     permissions:
       contents: read
       id-token: write
@@ -27,7 +27,7 @@ jobs:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: miracum/.github/.github/workflows/standard-lint.yaml@d09a237ae62959d3cf89d526a035fbd9d9d816ee # v1.5.8
+    uses: miracum/.github/.github/workflows/standard-lint.yaml@0acca4e2cf641d828c9514dce0ff70511b448cc2 # v1.5.9
     permissions:
       contents: read
       pull-requests: write
@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
 
       - name: Download build image
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: ${{ needs.build.outputs.image-slug }}
@@ -68,7 +68,7 @@ jobs:
       # the test image is always downloaded whether its a PR or not. Only the "actual" image is pushed to
       # the container registry on non-PRs.
       - name: Download test image
-        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
+        uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427 # v4.1.4
         with:
           name: ${{ needs.build.outputs.image-slug }}-test
           path: /tmp
@@ -94,7 +94,7 @@ jobs:
           docker compose -f tests/e2e/compose.yaml logs
 
   release:
-    uses: miracum/.github/.github/workflows/standard-release.yaml@d09a237ae62959d3cf89d526a035fbd9d9d816ee # v1.5.8
+    uses: miracum/.github/.github/workflows/standard-release.yaml@0acca4e2cf641d828c9514dce0ff70511b448cc2 # v1.5.9
     needs:
       - build
       - test
