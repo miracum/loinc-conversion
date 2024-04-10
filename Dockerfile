@@ -1,5 +1,5 @@
-# syntax=docker/dockerfile:1.6@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
-FROM docker.io/library/node:21.7.1-slim@sha256:ab9d8781cb3fe8b6429d68c6ce19512a4ff526a6688240249ca15069b8124626 AS build
+# syntax=docker/dockerfile:1.7@sha256:dbbd5e059e8a07ff7ea6233b213b36aa516b4c53c645f1817a4dd18b83cbea56
+FROM docker.io/library/node:21.7.2-slim@sha256:cce6eb16a48b952bf2277c41c9673ae63f6e9d52a1e6b376759b83b26382cbbe AS build
 WORKDIR /opt/loinc-conversion
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
