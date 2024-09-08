@@ -1,5 +1,4 @@
-# syntax=docker/dockerfile:1.7@sha256:dbbd5e059e8a07ff7ea6233b213b36aa516b4c53c645f1817a4dd18b83cbea56
-FROM docker.io/library/node:21.7.2-slim@sha256:cce6eb16a48b952bf2277c41c9673ae63f6e9d52a1e6b376759b83b26382cbbe AS build
+FROM docker.io/library/node:22.8.0-slim@sha256:377674fd5bb6fc2a5a1ec4e0462c4bfd4cee1c51f705bbf4bda0ec2c9a73af72 AS build
 WORKDIR /opt/loinc-conversion
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
@@ -19,7 +18,7 @@ ENV NODE_ENV=development
 RUN npm clean-install
 COPY tests/e2e tests/e2e
 
-FROM gcr.io/distroless/nodejs20-debian12:nonroot@sha256:c4c595a36ad2ced3cd952fad295a6afcb4469e91927159cfb95790031fe65d95
+FROM gcr.io/distroless/nodejs22-debian12:nonroot@sha256:a94a33713298e9accd787e477c7883f4ec355b1f564a119a55e4035414660e07
 WORKDIR /opt/loinc-conversion
 EXPOSE 8080/tcp
 ENV NODE_ENV=production \

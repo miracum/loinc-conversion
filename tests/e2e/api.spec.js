@@ -6,11 +6,10 @@ const HttpStatus = require("http-status-codes");
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const endpoint = process.env.API_ENDPOINT || "http://localhost:8080";
+const endpoint = process.env.API_ENDPOINT || "http://127.0.0.1:8080";
 
 const opts = {
   resources: [`${endpoint}/ready`],
-  delay: 1000, // initial delay in ms
   interval: 250, // poll interval in ms
   timeout: 30000, // timeout in ms
   tcpTimeout: 1000, // tcp timeout in ms
@@ -228,6 +227,8 @@ describe("LOINC Harmonization", () => {
           expect(body.unit).to.equal(expectedUnit);
           expect(body.value).to.equal(expectedValue);
           expect(body.display).to.equal(expectedDisplay);
+
+          expect(body).to.not.have.own.property("warning");
 
           done();
         });
