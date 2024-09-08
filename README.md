@@ -82,10 +82,11 @@ content-type: application/json
 
 ## Configuration
 
-| Environment variable | Description                                          | Default |
-| -------------------- | ---------------------------------------------------- | ------- |
-| LOG_REQUESTS         | Whether all API requests should be logged to stdout. | `false` |
-| PORT                 | The port to bind the web server to.                  | `8080`  |
+| Environment variable | Description                                                                            | Default |
+| -------------------- | -------------------------------------------------------------------------------------- | ------- |
+| LOG_REQUESTS         | Whether all API requests should be logged to stdout.                                   | `false` |
+| PORT                 | The port to bind the web server to.                                                    | `8080`  |
+| LOINC_VERSION        | The version of the LOINC database to use for conversion. Valid options: `2.67`, `2.77` | `2.67`  |
 
 ## Development
 

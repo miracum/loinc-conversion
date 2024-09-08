@@ -10,6 +10,8 @@ const app = require("fastify")({
     process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
 });
 
+const loincVersion = process.env.LOINC_VERSION || "2.67";
+
 app.register(require("fastify-graceful-shutdown"));
 
 app.register(metricsPlugin, {
@@ -59,9 +61,10 @@ try {
 }
 
 // Read official loinc database:
-log.info("Parsing 'loinc.csv'...");
+const loincFileName = `loinc-${loincVersion}.csv`;
+log.info(`Parsing '${loincFileName}'...`);
 try {
-  const loincCsv = parse(fs.readFileSync("data/loinc.csv", "utf-8"), {
+  const loincCsv = parse(fs.readFileSync(`data/${loincFileName}`, "utf-8"), {
     columns: true,
   });
 
@@ -89,6 +92,7 @@ try {
       loincUnits[entry.LOINC_NUM] = {
         exampleUcumUnits: entry.EXAMPLE_UCUM_UNITS.split(";")[0],
         display: entry.LONG_COMMON_NAME,
+        versionLastChanged: entry.VersionLastChanged,
       };
     }
   }
@@ -139,6 +143,8 @@ try {
   log.error(`Could not load 'conversion.csv': ${e}`, e);
   process.exit(1);
 }
+
+log.info("Initialization completed");
 
 // Create UCUM conversion singleton:
 const utils = ucum.UcumLhcUtils.getInstance();
@@ -222,6 +228,8 @@ function convert(loinc, unit, value = 1.0) {
       unit: targetUnit.replace("{arbitrary:IU}", "[IU]"),
       loinc,
       display: loincUnits[loinc].display,
+      versionLastChanged: loincUnits[loinc].versionLastChanged,
+      loincVersion,
     };
   } else {
     return {
@@ -229,6 +237,8 @@ function convert(loinc, unit, value = 1.0) {
       unit,
       loinc,
       display: loincUnits[loinc].display,
+      versionLastChanged: loincUnits[loinc].versionLastChanged,
+      loincVersion,
       warning: `No UCUM unit given for LOINC Code ${loinc}, will return ${unit}`,
     };
   }
