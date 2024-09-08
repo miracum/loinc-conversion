@@ -1,5 +1,9 @@
-# REST-server that converts LOINC codes and UCUM units to a standardized representation
+# loinc-conversion
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/miracum/loinc-conversion/badge)](https://scorecard.dev/viewer/?uri=github.com/miracum/loinc-conversion)
+[![SLSA 3](https://slsa.dev/images/gh-badge-level3.svg)](https://slsa.dev)
+
+Service that converts LOINC codes and UCUM units to a standardized representation.
 _loinc-conversion_ is a _REST_-server that accepts lists of `(LOINC-code, unit, value?)` and returns corresponding lists of `(LOINC-code, UCUM-unit, value)`.
 It provides three distinct functions:
 
