@@ -91,6 +91,15 @@ describe("API Endpoint", () => {
         done();
       });
   });
+
+  it("fails if not given a non-numeric value", (done) => {
+    api
+      .send({ loinc: "42719-5", value: "something", unit: "g/dL", id: 1 })
+      .then((response) => {
+        expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
+        done();
+      });
+  });
 });
 
 describe("UCUM Unit Conversion", () => {
@@ -100,6 +109,18 @@ describe("UCUM Unit Conversion", () => {
       .then((response) => {
         expect(response).to.have.status(HttpStatus.StatusCodes.OK);
         expect(response.body.unit).to.equal("g/dL");
+        done();
+      });
+  });
+
+  it("parses value given as string to numeric", (done) => {
+    api
+      .send({ loinc: "50562-8", value: "1.01499999", unit: "g/mL", id: 1 })
+      .then((response) => {
+        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+        expect(response.body.unit).to.equal("g/mL");
+        expect(response.body.value).to.equal(1.01499999);
+        expect(response.body.loinc).to.equal("50562-8");
         done();
       });
   });
@@ -185,15 +206,7 @@ describe("LOINC Harmonization", () => {
       "ug/(24.h)",
       "Norepinephrine [Mass/time] in 24 hour Urine",
     ],
-    [
-      "8329-5",
-      37,
-      "Cel",
-      "8329-5",
-      98.6,
-      "[degF]",
-      "Body temperature - Core",
-    ],
+    ["8329-5", 37, "Cel", "8329-5", 98.6, "[degF]", "Body temperature - Core"],
     [
       "8329-5",
       37.291234453432252849,
