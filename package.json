@@ -4,7 +4,7 @@
   "description": "Harmonizes LOINC codes and units.",
   "main": "src/server.js",
   "dependencies": {
-    "@lhncbc/ucum-lhc": "5.0.4",
+    "@lhncbc/ucum-lhc": "7.1.0",
     "csv-parse": "5.5.6",
     "fastify": "5.0.0",
     "fastify-graceful-shutdown": "4.0.1",
