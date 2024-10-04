@@ -180,25 +180,30 @@ function convert(loinc, unit, value = 1.0) {
     throw new Error(`Invalid UCUM unit: ${unit}`, { unit });
   }
 
+  let numericValue = Number.parseFloat(value);
+  if (Number.isNaN(numericValue)) {
+    throw new Error(`Value ${value} is not a number`, { value });
+  }
+
   // if the input LOINC is part of the "LOINC-to-LOINC" conversion table
   // the input is first converted to the harmonized LOINC code and expected UCUM unit
   if (loinc in conversionUnits) {
     // first convert the input unit ("unit") to the expected
     // source or "FROM_UNIT" from the loinc-specific conversion table
     const toUnitCode = conversionUnits[loinc].FROM_UNIT;
-    const result = utils.convertUnitTo(unit, value, toUnitCode);
+    const result = utils.convertUnitTo(unit, numericValue, toUnitCode);
     if (result.status !== "succeeded") {
       throw new Error(
         `Failed to convert ${unit} to ${toUnitCode} via the custom conversion table: ${result.msg}`,
         { unit, toUnitCode }
       );
     }
-    value = result.toVal;
+    numericValue = result.toVal;
     // --> unit = conversion[loinc]["FROM_UNIT"];
 
     // finally convert the source LOINC value (now in "FROM_UNIT" units)
     // to the "TO_LOINC" to the "TO_UNIT" value using the specific conversion factor
-    value *= conversionUnits[loinc].FACTOR;
+    numericValue *= conversionUnits[loinc].FACTOR;
     unit = conversionUnits[loinc].TO_UNIT;
     loinc = conversionUnits[loinc].TO_LOINC;
   }
@@ -210,7 +215,7 @@ function convert(loinc, unit, value = 1.0) {
   if (targetUnit) {
     const conversion = utils.convertUnitTo(
       unit.replace("[IU]", "{arbitrary:IU}"),
-      value,
+      numericValue,
       targetUnit.replace("[IU]", "{arbitrary:IU}")
     );
 
@@ -233,7 +238,7 @@ function convert(loinc, unit, value = 1.0) {
     };
   } else {
     return {
-      value: round(value),
+      value: round(numericValue),
       unit,
       loinc,
       display: loincUnits[loinc].display,
