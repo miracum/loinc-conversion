@@ -1,4 +1,4 @@
-FROM docker.io/library/node:22.16.0-slim@sha256:2f3571619daafc6b53232ebf2fcc0817c1e64795e92de317c1684a915d13f1a5 AS build
+FROM docker.io/library/node:22.18.0-slim@sha256:3b68ed4d422ba79da237ffa83523ace72b76d2572cc45dedd88d1645bbe5d4d3 AS build
 WORKDIR /opt/loinc-conversion
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
