@@ -1,4 +1,4 @@
-FROM docker.io/library/node:22.18.0-slim@sha256:3b68ed4d422ba79da237ffa83523ace72b76d2572cc45dedd88d1645bbe5d4d3 AS build
+FROM docker.io/library/node:22.18.0-slim@sha256:88f44fbb06cc98e1451e4e015c122f84030ec55c603f753ed97b889db0bb8d4d AS build
 WORKDIR /opt/loinc-conversion
 ENV NODE_ENV=production \
     NO_UPDATE_NOTIFIER=true
@@ -18,7 +18,7 @@ ENV NODE_ENV=development
 RUN npm clean-install
 COPY tests/e2e tests/e2e
 
-FROM gcr.io/distroless/nodejs22-debian12:nonroot@sha256:4358a2d9951da0174a3d1bd6a1cf69e5b9927b5fc0024563904492937ade907f
+FROM gcr.io/distroless/nodejs22-debian12:nonroot@sha256:8929dbab735ee399ff886ba7d81419dbe7df002993a7d69715e1c16b7d41c531
 WORKDIR /opt/loinc-conversion
 EXPOSE 8080/tcp
 ENV NODE_ENV=production \
