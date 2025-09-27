@@ -97,7 +97,7 @@ content-type: application/json
 ### Install Dependencies
 
 ```sh
-npm install
+npm clean-install
 ```
 
 ### Run with hot reload
@@ -119,21 +119,24 @@ This expects the app to run on <http://localhost:8080>. You can specify a differ
 ## Benchmark
 
 ```sh
-# Processor Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz, 4001 Mhz, 4 Core(s), 8 Logical Processor(s)
-# 32 GB DDR4 RAM @ 3600 MHz
+# OS=Windows 11 (10.0.22000.978/21H2)
+# 12th Gen Intel Core i9-12900K, 1 CPU, 24 logical and 16 physical cores
+# 32GiB of DDR5 4800MHz RAM
+# Samsung SSD 980 Pro 1TiB
+# NodeJS v24
 $ bombardier -d 30s "http://localhost:8080/api/v1/conversions?loinc=718-7&unit=g%2FdL&value=10"
-Bombarding http://localhost:8080/api/v1/conversions?loinc=718-7&unit=g%2FdL&value=10 for 30s using 500 connection(s)
-[=================================================================================================================] 30s
+Bombarding http://localhost:8080/api/v1/conversions?loinc=718-7&unit=g%2FdL&value=10 for 30s using 125 connection(s)
+[===========================================================================================================] 30s
 Done!
 Statistics        Avg      Stdev        Max
-  Reqs/sec     15883.46    1672.96   52707.38
-  Latency       31.51ms    45.90ms      2.76s
+  Reqs/sec     40843.02    4452.14   60068.12
+  Latency        3.06ms     1.99ms   370.35ms
   HTTP codes:
-    1xx - 0, 2xx - 476294, 3xx - 0, 4xx - 0, 5xx - 0
+    1xx - 0, 2xx - 1225358, 3xx - 0, 4xx - 0, 5xx - 0
     others - 0
-  Throughput:     5.61MB/s
+  Throughput:    16.48MB/s
 ```
 
 ## Legal
 
-This material contains content from LOINC (loinc.org). LOINC is copyright © 1995-2021, Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.
+This material contains content from LOINC (loinc.org). LOINC is copyright © 1995-2025, Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.
