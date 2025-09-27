@@ -119,8 +119,11 @@ This expects the app to run on <http://localhost:8080>. You can specify a differ
 ## Benchmark
 
 ```sh
-# Processor Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz, 4001 Mhz, 4 Core(s), 8 Logical Processor(s)
-# 32 GB DDR4 RAM @ 3600 MHz
+# OS=Windows 11 (10.0.22000.978/21H2)
+# 12th Gen Intel Core i9-12900K, 1 CPU, 24 logical and 16 physical cores
+# 32GiB of DDR5 4800MHz RAM
+# Samsung SSD 980 Pro 1TiB
+# NodeJS v24
 $ bombardier -d 30s "http://localhost:8080/api/v1/conversions?loinc=718-7&unit=g%2FdL&value=10"
 Bombarding http://localhost:8080/api/v1/conversions?loinc=718-7&unit=g%2FdL&value=10 for 30s using 125 connection(s)
 [===========================================================================================================] 30s
