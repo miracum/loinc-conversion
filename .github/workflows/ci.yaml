@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    uses: miracum/.github/.github/workflows/standard-build.yaml@e80245abb031a27f87d0e07eeb6f5f54a82a46b8 # v1.20.4
+    uses: miracum/.github/.github/workflows/standard-build.yaml@3bfac3980e60d6a95007eba4117cd7fd0054b0e2 # v1.22.2
     permissions:
       contents: write
       id-token: write
@@ -21,6 +21,7 @@ jobs:
       pull-requests: write
       actions: read
       security-events: write
+      attestations: write
     with:
       enable-build-test-layer: true
       enable-upload-test-image: true
@@ -28,7 +29,7 @@ jobs:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
-    uses: miracum/.github/.github/workflows/standard-lint.yaml@e80245abb031a27f87d0e07eeb6f5f54a82a46b8 # v1.20.4
+    uses: miracum/.github/.github/workflows/standard-lint.yaml@3bfac3980e60d6a95007eba4117cd7fd0054b0e2 # v1.22.2
     permissions:
       contents: read
       pull-requests: write
@@ -62,7 +63,7 @@ jobs:
           docker info -f '{{ .DriverStatus }}'
 
       - name: "Checkout code"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -109,7 +110,7 @@ jobs:
           docker compose -f tests/e2e/compose.yaml logs
 
   release:
-    uses: miracum/.github/.github/workflows/standard-release.yaml@e80245abb031a27f87d0e07eeb6f5f54a82a46b8 # v1.20.4
+    uses: miracum/.github/.github/workflows/standard-release.yaml@3bfac3980e60d6a95007eba4117cd7fd0054b0e2 # v1.22.2
     needs:
       - build
       - test
