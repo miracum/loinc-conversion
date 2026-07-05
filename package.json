@@ -2,7 +2,24 @@
   "name": "loinc-converter",
   "version": "1.0.0",
   "description": "Harmonizes LOINC codes and units.",
+  "keywords": [
+    "German Medical Informatics Initiative",
+    "LOINC",
+    "MIRACUM",
+    "UCUM"
+  ],
+  "license": "Apache-2.0",
+  "author": "miracum.org",
+  "type": "module",
   "main": "src/server.js",
+  "scripts": {
+    "tests:e2e": "node --experimental-vm-modules node_modules/.bin/jest tests/e2e",
+    "start": "node src/server.js",
+    "watch": "nodemon --watch src src/server.js",
+    "lint": "oxlint .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
+  },
   "dependencies": {
     "@lhncbc/ucum-lhc": "7.1.6",
     "csv-parse": "6.1.0",
@@ -13,24 +30,11 @@
     "pino": "10.3.1"
   },
   "devDependencies": {
-    "chai": "4.5.0",
-    "chai-http": "4.4.0",
-    "eslint": "10.0.2",
-    "eslint-config-prettier": "10.1.8",
+    "chai": "6.2.2",
+    "chai-http": "5.1.2",
     "jest": "30.2.0",
+    "oxfmt": "0.57.0",
+    "oxlint": "1.72.0",
     "wait-on": "9.0.4"
-  },
-  "scripts": {
-    "tests:e2e": "jest tests/e2e",
-    "start": "node src/server.js",
-    "watch": "nodemon --watch src src/server.js"
-  },
-  "keywords": [
-    "LOINC",
-    "UCUM",
-    "MIRACUM",
-    "German Medical Informatics Initiative"
-  ],
-  "author": "miracum.org",
-  "license": "Apache-2.0"
+  }
 }
