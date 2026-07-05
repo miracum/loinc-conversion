@@ -1,18 +1,22 @@
-const fs = require("fs");
-const { parse } = require("csv-parse/sync");
-const ucum = require("@lhncbc/ucum-lhc");
-const HttpStatus = require("http-status-codes");
-const log = require("pino")();
-const metricsPlugin = require("fastify-metrics");
+import fs from "node:fs";
+import { parse } from "csv-parse/sync";
+import ucum from "@lhncbc/ucum-lhc";
+import HttpStatus from "http-status-codes";
+import pino from "pino";
+import fastifyMetricsModule from "fastify-metrics";
+import fastify from "fastify";
+import fastifyGracefulShutdown from "fastify-graceful-shutdown";
 
-const app = require("fastify")({
-  logger:
-    process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
+const log = pino();
+const metricsPlugin = fastifyMetricsModule.default;
+
+const app = fastify({
+  logger: process.env.LOG_REQUESTS === "true" || process.env.LOG_REQUESTS === "1",
 });
 
 const loincVersion = process.env.LOINC_VERSION || "2.67";
 
-app.register(require("fastify-graceful-shutdown"));
+app.register(fastifyGracefulShutdown);
 
 app.register(metricsPlugin, {
   endpoint: "/metrics",
@@ -101,7 +105,7 @@ try {
     `Could not load 'loinc.csv': ${e}. ` +
       "Did you download the official 'LOINC Table File (CSV)'" +
       "from 'https://loinc.org/downloads/loinc-table/' and extract 'Loinc.csv'?",
-    e
+    e,
   );
   process.exit(1);
 }
@@ -195,7 +199,7 @@ function convert(loinc, unit, value = 1.0) {
     if (result.status !== "succeeded") {
       throw new Error(
         `Failed to convert ${unit} to ${toUnitCode} via the custom conversion table: ${result.msg}`,
-        { unit, toUnitCode }
+        { unit, toUnitCode },
       );
     }
     numericValue = result.toVal;
@@ -216,17 +220,14 @@ function convert(loinc, unit, value = 1.0) {
     const conversion = utils.convertUnitTo(
       unit.replace("[IU]", "{arbitrary:IU}"),
       numericValue,
-      targetUnit.replace("[IU]", "{arbitrary:IU}")
+      targetUnit.replace("[IU]", "{arbitrary:IU}"),
     );
 
     if (conversion.status !== "succeeded") {
-      throw new Error(
-        `Cannot convert ${unit} to ${targetUnit}: ${conversion.msg}`,
-        {
-          unit,
-          targetUnit,
-        }
-      );
+      throw new Error(`Cannot convert ${unit} to ${targetUnit}: ${conversion.msg}`, {
+        unit,
+        targetUnit,
+      });
     }
     return {
       value: round(conversion.toVal),
@@ -287,10 +288,7 @@ const postHandler = async (request, response) => {
 
   let requestBody = request.body;
 
-  if (
-    Object.entries(requestBody).length === 0 &&
-    requestBody.constructor === Object
-  ) {
+  if (Object.entries(requestBody).length === 0 && requestBody.constructor === Object) {
     return response
       .status(HttpStatus.StatusCodes.BAD_REQUEST)
       .send({ error: "Empty request body." });

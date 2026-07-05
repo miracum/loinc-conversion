@@ -1,7 +1,7 @@
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const waitOn = require("wait-on");
-const HttpStatus = require("http-status-codes");
+import * as chai from "chai";
+import chaiHttp, { request } from "chai-http";
+import waitOn from "wait-on";
+import HttpStatus from "http-status-codes";
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -28,7 +28,7 @@ beforeEach((done) => {
       console.log(err);
       throw err;
     });
-  api = chai.request(endpoint).post("/api/v1/conversions");
+  api = request.execute(endpoint).post("/api/v1/conversions");
 }, 20000);
 
 describe("API Endpoint", () => {
@@ -84,110 +84,78 @@ describe("API Endpoint", () => {
   });
 
   it("fails if not given a LOINC code", (done) => {
-    api
-      .send({ loinc: null, value: 12, unit: "g/dL", id: 1 })
-      .then((response) => {
-        expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
-        done();
-      });
+    api.send({ loinc: null, value: 12, unit: "g/dL", id: 1 }).then((response) => {
+      expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
+      done();
+    });
   });
 
   it("fails if not given a non-numeric value", (done) => {
-    api
-      .send({ loinc: "42719-5", value: "something", unit: "g/dL", id: 1 })
-      .then((response) => {
-        expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
-        done();
-      });
+    api.send({ loinc: "42719-5", value: "something", unit: "g/dL", id: 1 }).then((response) => {
+      expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
+      done();
+    });
   });
 });
 
 describe("UCUM Unit Conversion", () => {
   it("standardizes UCUM codes", (done) => {
-    api
-      .send({ loinc: "718-7", value: 12, unit: "g/dl", id: 1 })
-      .then((response) => {
-        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
-        expect(response.body.unit).to.equal("g/dL");
-        done();
-      });
+    api.send({ loinc: "718-7", value: 12, unit: "g/dl", id: 1 }).then((response) => {
+      expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+      expect(response.body.unit).to.equal("g/dL");
+      done();
+    });
   });
 
   it("parses value given as string to numeric", (done) => {
-    api
-      .send({ loinc: "50562-8", value: "1.01499999", unit: "g/mL", id: 1 })
-      .then((response) => {
-        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
-        expect(response.body.unit).to.equal("g/mL");
-        expect(response.body.value).to.equal(1.01499999);
-        expect(response.body.loinc).to.equal("50562-8");
-        done();
-      });
+    api.send({ loinc: "50562-8", value: "1.01499999", unit: "g/mL", id: 1 }).then((response) => {
+      expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+      expect(response.body.unit).to.equal("g/mL");
+      expect(response.body.value).to.equal(1.01499999);
+      expect(response.body.loinc).to.equal("50562-8");
+      done();
+    });
   });
 
   it("fails if given an inconvertible unit as part of the custom conversion table", (done) => {
-    api
-      .send({ loinc: "14854-4", value: 12, unit: "W/(24.h)" })
-      .then((response) => {
-        expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
-        expect(response.body.error).to.contain(
-          "W/(24.h) cannot be converted to nmol/(24.h)."
-        );
-        done();
-      });
+    api.send({ loinc: "14854-4", value: 12, unit: "W/(24.h)" }).then((response) => {
+      expect(response).to.have.status(HttpStatus.StatusCodes.BAD_REQUEST);
+      expect(response.body.error).to.contain("W/(24.h) cannot be converted to nmol/(24.h).");
+      done();
+    });
   });
 
   it("returns original unit and warning if given loinc without example unit and ucum code", (done) => {
-    api
-      .send({ loinc: "10346-5", value: 2000, unit: "/ml", id: 1 })
-      .then((response) => {
-        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
-        expect(response.body.unit).to.equal("/ml");
-        expect(response.body.value).to.equal(2000);
-        expect(response.body).to.have.property("warning");
-        expect(response.body.warning).to.contain(
-          "No UCUM unit given for LOINC Code 10346-5, will return /ml"
-        );
-        done();
-      });
+    api.send({ loinc: "10346-5", value: 2000, unit: "/ml", id: 1 }).then((response) => {
+      expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+      expect(response.body.unit).to.equal("/ml");
+      expect(response.body.value).to.equal(2000);
+      expect(response.body).to.have.property("warning");
+      expect(response.body.warning).to.contain(
+        "No UCUM unit given for LOINC Code 10346-5, will return /ml",
+      );
+      done();
+    });
   });
 
   it("returns ucum unit and warning if given loinc without example unit and non-ucum code", (done) => {
-    api
-      .send({ loinc: "10346-5", value: 2000, unit: "micromol/L", id: 1 })
-      .then((response) => {
-        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
-        expect(response.body.unit).to.equal("umol/L");
-        expect(response.body.value).to.equal(2000);
-        expect(response.body).to.have.property("warning");
-        expect(response.body.warning).to.contain(
-          "No UCUM unit given for LOINC Code 10346-5, will return umol/L"
-        );
-        done();
-      });
+    api.send({ loinc: "10346-5", value: 2000, unit: "micromol/L", id: 1 }).then((response) => {
+      expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+      expect(response.body.unit).to.equal("umol/L");
+      expect(response.body.value).to.equal(2000);
+      expect(response.body).to.have.property("warning");
+      expect(response.body.warning).to.contain(
+        "No UCUM unit given for LOINC Code 10346-5, will return umol/L",
+      );
+      done();
+    });
   });
 });
 
 describe("LOINC Harmonization", () => {
   it.each([
-    [
-      "59260-0",
-      10,
-      "mmol/l",
-      "718-7",
-      16.1,
-      "g/dL",
-      "Hemoglobin [Mass/volume] in Blood",
-    ],
-    [
-      "718-7",
-      3,
-      "g/dl",
-      "718-7",
-      3,
-      "g/dL",
-      "Hemoglobin [Mass/volume] in Blood",
-    ],
+    ["59260-0", 10, "mmol/l", "718-7", 16.1, "g/dL", "Hemoglobin [Mass/volume] in Blood"],
+    ["718-7", 3, "g/dl", "718-7", 3, "g/dL", "Hemoglobin [Mass/volume] in Blood"],
     [
       "62238-1",
       3,
@@ -228,23 +196,21 @@ describe("LOINC Harmonization", () => {
       expectedValue,
       expectedUnit,
       expectedDisplay,
-      done
+      done,
     ) => {
-      api
-        .send({ loinc: inputLoinc, value: inputValue, unit: inputUnit })
-        .then((response) => {
-          expect(response).to.have.status(HttpStatus.StatusCodes.OK);
-          const { body } = response;
+      api.send({ loinc: inputLoinc, value: inputValue, unit: inputUnit }).then((response) => {
+        expect(response).to.have.status(HttpStatus.StatusCodes.OK);
+        const { body } = response;
 
-          expect(body.loinc).to.equal(expectedLoinc);
-          expect(body.unit).to.equal(expectedUnit);
-          expect(body.value).to.equal(expectedValue);
-          expect(body.display).to.equal(expectedDisplay);
+        expect(body.loinc).to.equal(expectedLoinc);
+        expect(body.unit).to.equal(expectedUnit);
+        expect(body.value).to.equal(expectedValue);
+        expect(body.display).to.equal(expectedDisplay);
 
-          expect(body).to.not.have.own.property("warning");
+        expect(body).to.not.have.own.property("warning");
 
-          done();
-        });
-    }
+        done();
+      });
+    },
   );
 });
